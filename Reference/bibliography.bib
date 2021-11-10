@@ -1,0 +1,839 @@
+% Data Programming
+@article{2016_dataprogramming,
+author = {Ratner, Alexander and De Sa, Christopher and Wu, Sen and Selsam, Daniel and Ré, Christopher},
+year = {2016},
+month = {05},
+pages = {},
+title = {Data Programming: Creating Large Training Sets, Quickly},
+volume = {29},
+journal = {Advances in neural information processing systems},
+abstract = {We therefore propose a paradigm for the programmatic creation of training sets called data programming in which users express weak supervision strategies or domain heuristics as labeling functions, which are programs that label subsets of the data, but that are noisy and may conflict. We show that by explicitly representing this training set labeling process as a generative model, we can "denoise" the generated training set, and establish theoretically that we can recover the parameters of these generative models in a handful of settings. We then show how to modify a discriminative loss function to make it noise-aware, and demonstrate our method over a range of discriminative models including logistic regression and LSTMs. Experimentally, on the 2014 TAC-KBP Slot Filling challenge, we show that data programming would have led to a new winning score, and also show that applying data programming to an LSTM model leads to a TAC-KBP score almost 6 F1 points over a state-of-the-art LSTM baseline (and into second place in the competition). Additionally, in initial user studies we observed that data programming may be an easier way for non-experts to create machine learning models when training data is limited or unavailable.}
+}
+
+@article{2017_snorkel,
+   title={Snorkel: rapid training data creation with weak supervision},
+   volume={11},
+   ISSN={2150-8097},
+   url={http://dx.doi.org/10.14778/3157794.3157797},
+   DOI={10.14778/3157794.3157797},
+   number={3},
+   journal={Proceedings of the VLDB Endowment},
+   publisher={VLDB Endowment},
+   author={Ratner, Alexander and Bach, Stephen H. and Ehrenberg, Henry and Fries, Jason and Wu, Sen and Ré, Christopher},
+   year={2017},
+   month={Nov},
+   pages={269–282},
+abstract={Labeling training data is increasingly the largest bottleneck in deploying machine learning systems. We present Snorkel, a first-of-its-kind system that enables users to train state-of-the-art models without hand labeling any training data. Instead, users write labeling functions that express arbitrary heuristics, which can have unknown accuracies and correlations. Snorkel denoises their outputs without access to ground truth by incorporating the first end-to-end implementation of our recently proposed machine learning paradigm, data programming. We present a flexible interface layer for writing labeling functions based on our experience over the past year collaborating with companies, agencies, and research labs. In a user study, subject matter experts build models 2.8x faster and increase predictive performance an average 45.5\% versus seven hours of hand labeling. We study the modeling tradeoffs in this new setting and propose an optimizer for automating tradeoff decisions that gives up to 1.8x speedup per pipeline execution. In two collaborations, with the U.S. Department of Veterans Affairs and the U.S. Food and Drug Administration, and on four open-source text and image data sets representative of other deployments, Snorkel provides 132\% average improvements to predictive performance over prior heuristic approaches and comes within an average 3.60\% of the predictive performance of large hand-curated training sets.}
+}
+
+@phdthesis{2019_RatnerThesis, 
+title={Accelerating machine learning with training data management}, 
+url={https://stacks.stanford.edu/file/druid:js447nv1115/accelerating_ml_training_data_management_alexander_ratner_thesis_2019-augmented.pdf}, 
+school={Stanford University}, 
+author={Alexander Jason Ratner}, 
+year={2019}, 
+abstract={The proliferation of financial news sources reporting on companies, markets, currencies and stocks presents an opportunity for strategic decision making by mining data with the goal of extracting structured representations about financial entities and their inter-relations. These representations can be conveniently stored as (subject, predicate, object) triples in a knowledge graph that can be used drive new in-sights through answering complex queries using high level declarative languages.Towards this goal, we develop a high precision knowledge extraction pipeline tailored for the financial domain. This pipeline combines multiple information ex-traction techniques with a financial dictionary that we built, all working together to produce over 342,000 compact extractions from over 288,000 financial news articles, with a precision of 78\% at the top-100 extractions. These extractions are stored in a knowledge graph readily available for use in downstream applications. Our pipeline outperforms existing work in terms of precision, the total number of extractions and the coverage of financial predicates.}
+}
+
+
+% Weak supervision
+@inproceedings{2020_weaksupervision_subevent,
+    title = "Weakly {S}upervised {S}ubevent {K}nowledge {A}cquisition",
+    author = "Yao, Wenlin  and  Dai, Zeyu  and  Ramaswamy, Maitreyi  and  Min, Bonan  and  Huang, Ruihong",
+    booktitle = "Proceedings of the 2020 Conference on Empirical Methods in Natural Language Processing (EMNLP)",
+    month = Nov,
+    year = "2020",
+    address = "Online",
+    publisher = "Association for Computational Linguistics",
+    url = "https://aclanthology.org/2020.emnlp-main.430",
+    doi = "10.18653/v1/2020.emnlp-main.430",
+    pages = "5345--5356",
+    abstract = "Subevents elaborate an event and widely exist in event descriptions. Subevent knowledge is useful for discourse analysis and event-centric applications. Acknowledging the scarcity of subevent knowledge, we propose a weakly supervised approach to extract subevent relation tuples from text and build the first large scale subevent knowledge base. We first obtain the initial set of event pairs that are likely to have the subevent relation, by exploiting two observations that 1) subevents are temporally contained by the parent event, and 2) the definitions of the parent event can be used to further guide the identification of subevents. Then, we collect rich weak supervision using the initial seed subevent pairs to train a contextual classifier using BERT and apply the classifier to identify new subevent pairs. The evaluation showed that the acquired subevent tuples (239K) are of high quality (90.1{\%} accuracy) and cover a wide range of event types. The acquired subevent knowledge has been shown useful for discourse analysis and identifying a range of event-event relations.",
+}
+
+
+
+
+
+% Deep Reinforcement Learning
+
+% 10/10 - survey
+@inproceedings{Fischer2018RL,
+  title={Reinforcement learning in financial markets - a survey},
+  author={Thomas G. Fischer},
+  year={2018},
+booktitle={ FAU Discussion Papers in Economics 12/2018, Friedrich-Alexander University Erlangen-Nuremberg, Institute for Economics},
+abstract = {Over the past two decades, and albeit most attention still being devoted to supervised learning methods, the RL research community has made considerable advances in the finance domain. The present paper draws insights from almost 50 publications, and categorizes them into three main approaches, i.e., critic-only approach, actor-only approach, and actor-critic approach. Within each of these categories, the respective contributions are summarized and reviewed along the representation of the state, the applied reward function, and the action space of the agent. This cross-sectional perspective allows us to identify recurring design decisions as well as potential levers to improve the agent's performance. Finally, the individual strengths and weaknesses of each approach are discussed, and directions for future research are pointed out.}
+}
+
+% 10/10 - survey, very comprehensive and relevant; good coverage and comparison overview
+@article{Jiang2021surveyDRL,
+   title={Applications of deep learning in stock market prediction: Recent progress},
+   volume={184},
+   ISSN={0957-4174},
+   url={http://dx.doi.org/10.1016/j.eswa.2021.115537},
+   DOI={10.1016/j.eswa.2021.115537},
+   journal={Expert Systems with Applications},
+   publisher={Elsevier BV},
+   author={Jiang, Weiwei},
+   year={2021},
+   month={Dec},
+   pages={115537},
+abstract={Stock market prediction has been a classical yet challenging problem, with the attention from both economists and computer scientists. With the purpose of building an effective prediction model, both linear and machine learning tools have been explored for the past couple of decades. Lately, deep learning models have been introduced as new frontiers for this topic and the rapid development is too fast to catch up. Hence, our motivation for this survey is to give a latest review of recent works on deep learning models for stock market prediction. We not only category the different data sources, various neural network structures, and common used evaluation metrics, but also the implementation and reproducibility. Our goal is to help the interested researchers to synchronize with the latest progress and also help them to easily reproduce the previous studies as baselines. Base on the summary, we also highlight some future research directions in this topic}
+}
+
+
+% 10/10 - useful resources / libraries for implementing RL trading workflow
+@misc{liu2020finrl,
+      title={FinRL: A Deep Reinforcement Learning Library for Automated Stock Trading in Quantitative Finance}, 
+      author={Xiao-Yang Liu and Hongyang Yang and Qian Chen and Runjia Zhang and Liuqing Yang and Bowen Xiao and Christina Dan Wang},
+      year={2020},
+      eprint={2011.09607},
+      archivePrefix={arXiv},
+      primaryClass={q-fin.TR},
+abstract={As deep reinforcement learning (DRL) has been recognized as an effective approach in quantitative finance, getting hands-on experiences is attractive to beginners. However, to train a practical DRL trading agent that decides where to trade, at what price, and what quantity involves error-prone and arduous development and debugging. In this paper, we introduce a DRL library FinRL that facilitates beginners to expose themselves to quantitative finance and to develop their own stock trading strategies. Along with easily-reproducible tutorials, FinRL library allows users to streamline their own developments and to compare with existing schemes easily. Within FinRL, virtual environments are configured with stock market datasets, trading agents are trained with neural networks, and extensive backtesting is analyzed via trading performance. Moreover, it incorporates important trading constraints such as transaction cost, market liquidity and the investor's degree of risk-aversion. FinRL is featured with completeness, hands-on tutorial and reproducibility that favors beginners: (i) at multiple levels of time granularity, FinRL simulates trading environments across various stock markets, including NASDAQ-100, DJIA, S&P 500, HSI, SSE 50, and CSI 300; (ii) organized in a layered architecture with modular structure, FinRL provides fine-tuned state-of-the-art DRL algorithms (DQN, DDPG, PPO, SAC, A2C, TD3, etc.), commonly-used reward functions and standard evaluation baselines to alleviate the debugging workloads and promote the reproducibility, and (iii) being highly extendable, FinRL reserves a complete set of user-import interfaces. Furthermore, we incorporated three application demonstrations, namely single stock trading, multiple stock trading, and portfolio allocation.}
+}
+
+% 9/10 - good references, very relevant, only price information
+@inproceedings {yang2020,
+  title={Deep Reinforcement Learning for Automated Stock Trading: An Ensemble Strategy},
+  author={Hongyang Yang, Xiao-Yang Liu, Shan Zhong and Anwar Walid},
+  year={2020},
+  booktitle = {ICAIF ’20: ACM International Conference on AI in Finance, Oct. 15–16, 2020, Manhattan, NY. ACM, New York, NY, USA.},
+
+abstract={We train a deep reinforcement learning agent and obtain an ensemble trading strategy using three actor-critic based algorithms: Proximal Policy Optimization (PPO), Advantage Actor Critic (A2C), and Deep Deterministic Policy Gradient (DDPG). The ensemble strategy inherits and integrates the best features of the three algorithms, thereby robustly adjusting to different market situations. In order to avoid the large memory consumption in training networks with continuous action space, we employ a load-on-demand technique for processing very large data. We test our algorithms on the 30 Dow Jones stocks that have adequate liquidity. The performance of the trading agent with different reinforcement learning algorithms is evaluated and compared with both the Dow Jones Industrial Average index and the traditional min-variance portfolio allocation strategy. The proposed deep ensemble strategy is shown to outperform the three individual algorithms and two baselines in terms of the risk-adjusted return measured by the Sharpe ratio.},
+
+}
+
+% 2/10 - badly written, seems like study notes rather than published paper, some good collection of fundamental concepts
+@article{Mosavi2020,
+   title={Comprehensive Review of Deep Reinforcement Learning Methods and Applications in Economics},
+   url={http://dx.doi.org/10.20944/preprints202003.0309.v1},
+   DOI={10.20944/preprints202003.0309.v1},
+   publisher={MDPI AG},
+   author={Mosavi, Amir and Ghamisi, Pedram and Faghan, Yaser and Duan, Puhong and Shamshirband, Shahab},
+   year={2020},
+   month={Mar},
+abstract={The popularity of deep reinforcement learning (DRL) methods in economics have been exponentially increased. DRL through a wide range of capabilities from reinforcement learning (RL) and deep learning (DL) for handling sophisticated dynamic business environments offers vast opportunities. DRL is characterized by scalability with the potential to be applied to high-dimensional problems in conjunction with noisy and nonlinear patterns of economic data. In this work, we first consider a brief review of DL, RL, and deep RL methods in diverse applications in economics providing an in-depth insight into the state of the art. Furthermore, the architecture of DRL applied to economic applications is investigated in order to highlight the complexity, robustness, accuracy, performance, computational tasks, risk constraints, and profitability. The survey results indicate that DRL can provide better performance and higher accuracy as compared to the traditional algorithms while facing real economic problems at the presence of risk parameters and the ever-increasing uncertainties.}
+}
+
+
+
+
+
+
+
+% Surveys
+
+% 10/10 - causality extraction, good comparison and summary, structured view; useful information on dataset (pros/cons + limitations)
+@misc{2021_survey_extraction_causality,
+      title={A Survey on Extraction of Causal Relations from Natural Language Text}, 
+      author={Jie Yang and Soyeon Caren Han and Josiah Poon},
+      year={2021},
+      eprint={2101.06426},
+      archivePrefix={arXiv},
+      primaryClass={cs.IR},
+abstract={In this paper, we conduct a comprehensive survey of causality extraction. We initially introduce primary forms existing in the causality extraction: explicit intra-sentential causality, implicit causality, and inter-sentential causality. Next, we list benchmark datasets and modeling assessment methods for causal relation extraction. Then, we present a structured overview of the three techniques with their representative systems. Lastly, we highlight existing open challenges with their potential directions.}
+}
+
+% 10/10 - good background info.; very relevant; reference comparison embedded in text (not table)
+@misc{2021_survey_textanalysis_fin,
+      title={Text analysis in financial disclosures}, 
+      author={Sridhar Ravula},
+      year={2021},
+      eprint={2101.04480},
+      archivePrefix={arXiv},
+      primaryClass={q-fin.TR},
+abstract={This paper covers the previous work in unstructured data analysis in Finance and Accounting. It also explores the state of art methods in computational linguistics and reviews the current methodologies in Natural Language Processing (NLP). Specifically, it focuses on research related to text source, linguistic attributes, firm attributes, and mathematical models employed in the text analysis approach. This work contributes to disclosure analysis methods by highlighting the limitations of the current focus on sentiment metrics and highlighting broader future research areas}
+}
+
+%  4/10 - causal inference, not very relevant; deducing cause and effect for social science, not concrete identification and extraction of causal phrases.
+@misc{2021_survey_causalInfer,
+      title={Causal Inference in Natural Language Processing: Estimation, Prediction, Interpretation and Beyond}, 
+      author={Amir Feder and Katherine A. Keith and Emaad Manzoor and Reid Pryzant and Dhanya Sridhar and Zach Wood-Doughty and Jacob Eisenstein and Justin Grimmer and Roi Reichart and Margaret E. Roberts and Brandon M. Stewart and Victor Veitch and Diyi Yang},
+      year={2021},
+      eprint={2109.00725},
+      archivePrefix={arXiv},
+      primaryClass={cs.CL},
+abstract ={In this survey, we consolidate research across academic areas and situate it in the broader NLP landscape. We introduce the statistical challenge of estimating causal effects, encompassing settings where text is used as an outcome, treatment, or as a means to address confounding. In addition, we explore potential uses of causal inference to improve the performance, robustness, fairness, and interpretability of NLP models. We thus provide a unified overview of causal inference for the computational linguistics community.}
+}
+
+% 9/10
+@article{2019_survey_textmining_fin,
+author = {Turegun, Nida},
+year = {2019},
+month = {01},
+pages = {18-26},
+title = {Text Mining in Financial Information},
+volume = {1},
+abstract={Financial information mainly lies in financial statements, but it should be noted that financial information can be textual as well as numerals. There are many data sources (footnotes, sustainability reports, executive letters etc.) which are different from the financial statements that provide useful valuable information for decision makers. As a form of communication, text data allow researchers to understand managers' behavioral approaches and business behavior. The analysis of these data requires text mining methods. Text mining is a large data analysis used in the analysis of semi-structural and non-structural data. Within the scope of this information, it is aimed to raise awareness on the use of text mining in non-structural data analysis in the field of financial information. In addition, the aim of this study is to provide a review of previous studies and to guide the researchers about its applications in the field of financial information.}
+}
+
+% 7/10 - some useful pointers, interesting methodology of identifying key research paper - network analysis
+@Article{2019_survey_textmining_financialsector,
+AUTHOR = {Pejić Bach, Mirjana and Krstić, Živko and Seljan, Sanja and Turulja, Lejlaf},
+TITLE = {Text Mining for Big Data Analysis in Financial Sector: A Literature Review},
+JOURNAL = {Sustainability},
+VOLUME = {11},
+YEAR = {2019},
+NUMBER = {5},
+ARTICLE-NUMBER = {1277},
+URL = {https://www.mdpi.com/2071-1050/11/5/1277},
+ISSN = {2071-1050},
+ABSTRACT = {Big data technologies have a strong impact on different industries, starting from the last decade, which continues nowadays, with the tendency to become omnipresent. The financial sector, as most of the other sectors, concentrated their operating activities mostly on structured data investigation. However, with the support of big data technologies, information stored in diverse sources of semi-structured and unstructured data could be harvested. Recent research and practice indicate that such information can be interesting for the decision-making process. Questions about how and to what extent research on data mining in the financial sector has developed and which tools are used for these purposes remains largely unexplored. This study aims to answer three research questions: (i) What is the intellectual core of the field? (ii) Which techniques are used in the financial sector for textual mining, especially in the era of the Internet, big data, and social media? (iii) Which data sources are the most often used for text mining in the financial sector, and for which purposes? In order to answer these questions, a qualitative analysis of literature is carried out using a systematic literature review, citation and co-citation analysis.},
+DOI = {10.3390/su11051277}
+}
+
+% 5/10 - not very comprehensive/concrete; some reference might be useful
+@inproceedings{2019_survey_causaldependencies,
+author = {Nazaruka, Erika},
+title = {Identification of Causal Dependencies by Using Natural Language Processing: A Survey},
+year = {2019},
+isbn = {9789897583759},
+publisher = {SCITEPRESS - Science and Technology Publications, Lda},
+address = {Setubal, PRT},
+url = {https://doi.org/10.5220/0007842706030613},
+doi = {10.5220/0007842706030613},
+abstract = {Identification of cause-effect relations in the domain is crucial for construction
+of its correct model, and especially for the Topological Functioning Model (TFM).
+Key elements of the TFM are functional characteristics of the system and cause-effect
+relations between them. Natural Language Processing (NLP) can help in automatic processing
+of textual descriptions of functionality of the domain. The current research illustrates
+results of a survey of research papers on identification and extracting cause-effect
+relations from text using NLP and other techniques. The survey shows that expression
+of cause-effect relations in text can be very different. Sometimes the same language
+constructs indicate both causal and non-causal relations. Hybrid solutions that use
+machine learning, ontologies, linguistic and syntactic patterns as well as temporal
+reasoning show better results in extracting and filtering cause-effect pairs. Multi
+cause and multi effect domains still are not very well studied.},
+booktitle = {Proceedings of the 14th International Conference on Evaluation of Novel Approaches to Software Engineering},
+pages = {603–613},
+numpages = {11},
+keywords = {Topological Functioning Model., System Modelling, Natural Language Processing, Knowledge Extraction},
+location = {Heraklion, Crete, Greece},
+series = {ENASE 2019}
+}
+
+
+% 4/10 - very basic, a bit outdated; mainly classification and LDA analysis
+@article{2016_survey,
+title = {Textual analysis and machine leaning: Crack unstructured data in finance and accounting},
+author = {Guo, Feng i},
+address = {Beijing :},
+issn = {2405-9188},
+journal = {The journal of finance and data science.},
+lccn = {2018268542},
+number = {3},
+publisher = {KeAi Communications Co. Ltd.,},
+volume = {2},
+abstract = {In finance and accounting, relative to quantitative methods traditionally used, textual analysis becomes popular recently despite of its substantially less precise manner. In an overview of the literature, we describe various methods used in textual analysis,
+especially machine learning. By comparing their classification performance, we find that neural network outperforms many other
+machine learning techniques in classifying news category. Moreover, we highlight that there are many challenges left for future
+development of textual analysis, such as identifying multiple objects within one single document.}
+}
+
+
+
+% 3/10 - badly written, not very comprehensive, some interesting references
+@misc{2020_survey_textmining_finance,
+      title={Comprehensive review of text-mining applications in finance}, 
+      author={Gupta, A. and Dengre, V. and Kheruwala, H.A.},
+      year={2020},
+journal = {Financ Innov 6, 39},
+DOI = {https://doi.org/10.1186/s40854-020-00205-1},
+abstract ={This paper focuses on the text-mining literature related to financial forecasting, banking, and corporate finance. It also analyses the existing literature on text mining in financial applications and provides a summary of some recent studies. Finally, the paper briefly discusses various text-mining methods being applied in the financial domain, the challenges faced in these applications, and the future scope of text mining in finance.}
+}
+
+
+% 10/10 - very RELEVANT! addresses key issues with critical reflection; management/accounting perspective; good writing style
+@article{2019_FadorFuture,
+  title={Fad or future? Automated analysis of financial text and its implications for corporate reporting},
+  author={Craig M. Lewis and Steven Young},
+  journal={Accounting and Business Research},
+  year={2019},
+  volume={49},
+  pages={587 - 615},
+abstract = {This paper describes the current state of natural language processing (NLP) as it applies to corporate reporting. We document dramatic increases in the quantity of verbal content that is an integral part of company reporting packages, as well as the evolution of text analytic approaches being employed to analyse this content. We provide intuitive descriptions of the leading analytic approaches applied in the academic accounting and finance literatures. This discussion includes key word searches and counts, attribute dictionaries, naïve Bayesian classification, cosine similarity, and latent Dirichlet allocation. We also discuss how increasing interest in NLP processing of the corporate reporting package could and should influence financial reporting regulation and note that textual analysis is currently more of an afterthought, if it is even considered. Opportunities for improving the usefulness of NLP processing are discussed, as well as possible impediments}
+}
+
+
+
+
+%#Causal #Support
+
+% 10/10 - very RELEVANT; provide a support base for further studies
+@article{2018_causal_finan,
+title = {Causal language intensity in performance commentary and financial analyst behaviour},
+author = {Zhang, Shuyu and Aerts, Walter and Pan, Huifeng},
+year = {2018},
+month = {08},
+volume = {46},
+journal = {Journal of Business Finance \& Accounting},
+doi = {10.1111/jbfa.12351},
+abstract={We use automated techniques to measure causal reasoning on earnings‐related financial outcomes of a large sample of MD&A sections of US firms and examine the intensity of causal language in that context against extent of analyst following and against properties of analysts’ earnings forecasts. We find a positive and significant association between a firm's causal reasoning intensity and analyst following and analyst earnings forecast accuracy respectively. Correspondingly, analysts’ earnings forecast dispersion is negatively and significantly associated with causal reasoning intensity. These results suggest that causal reasoning intensity provides incremental information about the relation between financial performance outcomes and its causes, thereby reducing financial analysts’ information processing and interpreting costs and lowering overall analyst information uncertainty. Additionally, we find that decreases in analyst following are followed by more causal reasoning on performance disclosure. We also find that firms with a considerable increase of causal disclosure especially attract new analysts who already cover many firms. Overall, our evidence of the relation between causal reasoning intensity and properties of analyst behaviour is consistent with the proposition that causal reasoning is a generic narrative disclosure quality characteristic, able to provide incremental information to analysts and guide analysts' behaviour.}
+}
+
+% #Support #EDA visualisation
+% 9/10 - helpful conclusions re word counts and sentiment; useful visualisation for EDA  
+@article{2018_financialPerformance,
+title = {About relationship between business text patterns and financial performance in corporate data},
+author = {Lee, BangRae and Park, Jun-Hwan and Kwon, Leenam and Moon, Young-Ho and Shin, Youngho and Kim, GyuSeok and Kim, Han-joon},
+year = {2018},
+month = {12},
+pages = {},
+volume = {4},
+journal = {Journal of Open Innovation: Technology, Market, and Complexity},
+doi = {10.1186/s40852-018-0080-9},
+abstract={This study uses text and data mining to investigate the relationship between the text
+patterns of annual reports published by US listed companies and sales performance.
+Taking previous research a step further, although annual reports show only past and
+present financial information, analyzing text content can identify sentences or patterns
+that indicate the future business performance of a company.}
+}
+
+
+% #Support #Emerging Trends Identification
+% 4/10 - interesting approach of identifying emerging trends, questionable relevance - mainly topic modelling / LDA; survial analysis, hot vs. cold 
+@Article{2017_identifyTrends,
+TITLE = {Identifying Emerging Trends of Financial Business Method Patents},
+AUTHOR = {Lee, Won Sang and Sohn, So Young},
+JOURNAL = {Sustainability},
+VOLUME = {9},
+YEAR = {2017},
+NUMBER = {9},
+ARTICLE-NUMBER = {1670},
+URL = {https://www.mdpi.com/2071-1050/9/9/1670},
+ISSN = {2071-1050},
+ABSTRACT = {Financial technology has become an important part of the banking industry in recent times. This study attempts to propose a framework to identify emerging areas and trends using financial business method patents. Based on the abstracts of financial business method patents registered at the United States Patent and Trademark Office, this study first applies latent Dirichlet allocation to identify emerging topics. The probability of the annual occurrence of each topic is adjusted through the exponentially weighted moving average to reflect the importance of the recent probability of topics. Each topic is classified as “hot” or “cold” depending on whether the exponentially weighted moving average of the probabilities exceeds the threshold. We applied survival analysis to the time gap of recurrently becoming hot from a cold status with the associated factor of financial business method patents. The findings suggest that the topic with the short granted period and high forward citation is likely to become hot. In addition, the topic that is aged and specific in narrow areas is likely to continuously change into the hot or cold status. The approach proposed in this study contributes toward understanding topic emergence in the financial area and pursuing sustainable development.},
+DOI = {10.3390/su9091670}
+}
+
+% #Support #Automate the analysis of attribution
+% 7/10 - useful list of key words; basic; some good reference; public dataset for benchmarking?
+@inproceedings{2016_attribution,
+title = "Learning tone and attribution for financial text mining",
+author = "Mahmoud El-Hay and Paul Rayson and Steve Young and Martin Walker and Thomas Schleicher and Vasiliki Athanasakou",
+year = "2016",
+language = "English",
+pages = "1820",
+booktitle = "In: N. Calzolari, K. Choukri, T. Declerck, M. Grobelnik, B. Maegaard, J. Mariani, A. Moreno, J. Odijk, S. Piperidis (Eds.) Proceedings of LREC 2016, Tenth International Conference on Language Resources and Evaluation. European Language Resources Association (ELRA)",
+
+abstract={Attribution bias refers to the tendency of people to attribute successes to their own abilities but failures to external factors. In a business context an internal factor might be the restructuring of the firm and an external factor might be an unfavourable change in exchange or interest rates. In accounting research, the presence of an attribution bias has been demonstrated for the narrative sections of the
+annual financial reports. Previous studies have applied manual content analysis to this problem but in this paper we present novel work to automate the analysis of attribution bias through using machine learning algorithms. Previous studies have only applied manual content analysis on a small scale to reveal such a bias in the narrative section of annual financial reports. In our work a group of experts in accounting and finance labelled and annotated a list of 32,449 sentences from a random sample of UK Preliminary Earning Announcements (PEAs) to allow us to examine whether sentences in PEAs contain internal or external attribution and which kinds of attributions are linked to positive or negative performance. We wished to examine whether human annotators could agree on coding this difficult task and whether Machine Learning (ML) could be applied reliably to replicate the coding process on a much larger scale.
+Our best machine learning algorithm correctly classified performance sentences with 70\% accuracy and detected tone and attribution in financial PEAs with accuracy of 79\%.}
+}
+
+% #Support #Information Content Measures
+% 7/10 - important word list, prior research theories;
+@article{2012_beyondNumbers,
+title = {Beyond the Numbers: Measuring the Information Content of Earnings Press Release Language},
+author = {Davis, Angela and Piger, Jeremy and Sedor, Lisa},
+year = {2012},
+month = {09},
+pages = {845-868},
+volume = {29},
+journal = {Contemporary Accounting Research},
+doi = {10.1111/j.1911-3846.2011.01130.x},
+abstract={Earnings press releases are the primary mechanism by which managers announce quarterly earnings and make other concurrent disclosures to investors and other stakeholders. A largely unexplored element of earnings press releases is the language that managers use throughout the press release, which we argue provides a unifying framework for these disclosures and an opportunity for managers to signal, both directly and more subtly, their expectations about future performance. We analyze the full texts of approximately 23,000 earnings press releases issued between 1998 and 2003 and examine whether the language used in these earnings press releases provides a signal about expected future firm performance and whether the market responds to this signal. Using categories derived from linguistic theory, we count words characterized as optimistic and pessimistic and construct a measure of managers' net optimistic language for each earnings press release. We find that this measure is positively associated with future return on assets and generates a significant market response in a short window around the earnings announcement date. We include in our models the earnings surprise as well as other quantifiable, concurrent disclosures identified in prior research as associated with the market's reaction to earnings press releases. Our results support the premise that earnings press release language provides a signal regarding managers' future earnings expectations to the market and that the market responds to this signal. We interpret our evidence to suggest that managers use language in earnings press releases to communicate credible information about expected future firm performance}
+}
+
+% #Support #Verbs dictionary #Earnings Annnouncement #Market Reaction
+% 9/10 - a bit outdated but provides theoretical support; useful thesaurus list
+@article{2007_verbal_market,
+title = {Market Reaction to Verbal Components of Earnings Press Releases: Event Study Using a Predictive Algorithm},
+author = {Henry, Elaine},
+year = {2007},
+month = {01},
+pages = {},
+volume = {3},
+journal = {Journal of Emerging Technologies in Accounting},
+doi = {10.2308/jeta.2006.3.1.1},
+abstract={Similar to a classic event study, this study examines market reaction to firms' earnings announcements. This study extends the examination to include a broad range of concurrent disclosure contained in earnings press releases: financial disclosure captured as accounting ratios; and verbal components of disclosure, both content and style, which are captured using elementary computer-based content analysis. Extending the analysis to such a broad range of concurrent disclosures requires a methodology designed to utilize a large number of predictor variables, and predictive data mining algorithms are specifically designed to do so. Therefore, this study employs a widely used data-mining algorithm - classification and regression trees (CART). Results of the study show that inclusion of predictor variables capturing verbal content and writing style of earnings-press releases results in more accurate predictions of market response.}
+}
+
+
+% #Support #Self-organising Map
+% 8/10 - outdated but interesting SOM algorithm, sort of in the right direction
+@article{2002_textmining_finreport,
+title = {Combining data and text mining techniques for analysing financial reports},
+author = {Kloptchenko, Antonina and Eklund, Tomas and Karlsson, Jonas and Back, Barbro and Vanharanta, Hannu and Visa, Ari},
+year = {2002},
+month = {01},
+pages = {},
+volume = {12},
+journal = {International Journal of Intelligent Systems in Accounting},
+doi = {10.1002/isaf.239},
+abstract={While automatic analysis of ﬁnancial ﬁgures is common, it has been difﬁcult to extract meaning from the textual parts of ﬁnancial reports automatically. The textual part of an annual report contains richer information than the ﬁnancial ratios. In this paper, we combine data and text mining methods for analysing quantitative and qualitative data from ﬁnancial reports, in order to see if the textual part of the report contains some indications about future ﬁnancial performance. The quantitative analysis has been performed using self‐organizing maps, and the qualitative analysis using prototype‐matching text clustering. The analysis is performed on the quarterly reports of three leading companies in the telecommunications sector}
+}
+
+% TODO
+% #Extraction #FinText #KG #Hybrid
+%[8]/10 - 
+@mastersthesis{2021_finKGhybrid,
+  author       = {Chun-Heng Jen}, 
+  title        = {Exploring Construction of a Company Domain-Specific Knowledge Graph from Financial Texts Using Hybrid Information Extraction},
+  type = {Master's Thesis},
+  school       = {KTH Royal Institute of Technology, School of Electrical Engineering and Computer Science},
+  year         = {2021},
+abstract      = {This project explores an approach to construct a company domain-specific Knowledge Graph (KG) that contains company-related entities and relationships from the U.S. Securities and Exchange Commission (SEC) 10-K filings by combining a pre-trained general NLP with rule-based patterns in Named Entity Recognition (NER) and Relation Extraction (RE). This approach eliminates the time-consuming data-labeling task in the statistical approach, and by evaluating ten 10-k filings, the model has the overall Recall of 53.6\%, Precision of 75.7\%, and the F1-score of 62.8\%. The result shows it is possible to extract company information using the hybrid methods, which does not require a large amount of labeled training data. However, the project requires the time-consuming process of finding lexical patterns from sentences to extract company-related entities and relationships.}
+}
+
+
+% #Extraction # Maths textbook #Network analysis 
+% 9/10 Linear Algebra textbook, pre-defined terms, gaps, core vs peripheral
+@article{2020_semanticNetworkMathText,
+   title={Architecture and evolution of semantic networks in mathematics texts},
+   volume={476},
+   ISSN={1471-2946},
+   url={http://dx.doi.org/10.1098/rspa.2019.0741},
+   DOI={10.1098/rspa.2019.0741},
+   number={2239},
+   journal={Proceedings of the Royal Society A: Mathematical, Physical and Engineering Sciences},
+   publisher={The Royal Society},
+   author={Christianson, Nicolas H. and Sizemore Blevins, Ann and Bassett, Danielle S.},
+   year={2020},
+   month={Jul},
+   pages={20190741},
+Abstract = {Knowledge is a network of interconnected concepts. Yet, precisely how the topological structure of knowledge constrains its acquisition remains unknown, hampering the development of learning enhancement strategies. Here we study the topological structure of semantic networks reflecting mathematical concepts and their relations in college-level linear algebra texts. We hypothesize that these networks will exhibit structural order, reflecting the logical sequence of topics that ensures accessibility. We find that the networks exhibit strong core-periphery architecture, where a dense core of concepts presented early is complemented with a sparse periphery presented evenly throughout the exposition; the latter is composed of many small modules each reflecting more narrow domains. Using tools from applied topology, we find that the expositional evolution of the semantic networks produces and subsequently fills knowledge gaps, and that the density of these gaps tracks negatively with community ratings of each textbook. Broadly, our study lays the groundwork for future efforts developing optimal design principles for textbook exposition and teaching in a classroom setting.}
+}
+
+% #Extraction #History textbook #Mindmap
+% 5/10 - interesting application history text book, but very simplistic - BERT summarization in original sentence
+@mastersthesis{2021_historyTextbook,
+  author       = {Sophie McIntyre}, 
+  title        = {Mind Map Automation: Using Natural Language Processing to Graphically Represent a Portion of a U.S. History Textbook},
+type = {Master's Thesis},
+school       = {University Honors College Middle Tennessee State University},
+  year         = 2021,
+  month        = April,
+  url = {https://jewlscholar.mtsu.edu/handle/mtsu/6522},  
+abstract      = {A mind map is a hierarchical representation of ideas that can be branched back to one centralized theme. Mind mapping can be applied to many disciplines and provides numerous cognitive benefits. One problem, however, is that the process of creating a mind map can become tedious and time consuming. This is especially problematic for students who have busy schedules and need to optimize their studying time. Therefore, this thesis aims to solve the challenge by developing an automated mind mapping system to analyze sections of a U.S. history textbook. The system uses natural language processing techniques to organize the text so that it can be graphically displayed for users. The primary goal of this project is to give students a supplementary tool that they can use to further their studies, and a future objective of this research is to expand the scope to include subjects outside of U.S. history.}
+}
+
+% #Extraction #CookingRecipe
+% 9/10 - good elaboration on background concepts and models ('dependency parser', 'NER', 'Frame and slots', etc.; strong introduction but weaker body of content; annotation schema not relevant
+@thesis{2019_semanticParsing_cookingRecipes,
+  author    = {Florian Pfisterer}, 
+  title        = {A Study on Semantic Parsing of Cooking Recipes},
+  type       = {Bachelor's Thesis},
+  school    = {Karlsruhe Institues of Technology, Carnegie Mellon University},
+  year       = {2019},
+  month    = {November},
+abstract      = {In this thesis, we study English cooking recipes, identify challenges for semantically parsing them, and evaluate existing rule-based, syntax-based and neural end-to-end semantic parsers on a small dataset of 50 English recipes we create. We compare their performance on trigger word identication (which words evoke actions or entities), action classication (which type of action is evoked) and input identication (which entities
+participate in each action). We find that the syntactic parse of the recipe is a very useful input for a semantic parser, as syntax-based pipelines in our comparison outperform neural methods by 0.48 and more absolute F1-score dierence in input identication.}
+}
+
+
+
+
+% #Extraction #FinNews #Knowledge Graph
+% 7/10 -  - a longer version of another publish paper with more implementation details; useful lexicon bigrams; events mostly on announcement, appointment, M\&A, etc.; interesting pipeline but questionable downstream application in real life.
+@phdthesis{2020_finKG_thesis, 
+series={Electronic Theses and Dissertations (ETDs) 2008+}, 
+title={Financial knowledge graph construction}, 
+url={https://open.library.ubc.ca/collections/ubctheses/24/items/1.0392614}, 
+DOI={http://dx.doi.org/10.14288/1.0392614}, 
+school={University of British Columbia}, 
+author={Elhammadi, Sarah}, 
+year={2020}, 
+collection={Electronic Theses and Dissertations (ETDs) 2008+},
+abstract={The proliferation of financial news sources reporting on companies, markets, currencies and stocks presents an opportunity for strategic decision making by mining data with the goal of extracting structured representations about financial entities and their inter-relations. These representations can be conveniently stored as (subject, predicate, object) triples in a knowledge graph that can be used drive new in-sights through answering complex queries using high level declarative languages.Towards this goal, we develop a high precision knowledge extraction pipeline tailored for the financial domain. This pipeline combines multiple information ex-traction techniques with a financial dictionary that we built, all working together to produce over 342,000 compact extractions from over 288,000 financial news articles, with a precision of 78\% at the top-100 extractions. These extractions are stored in a knowledge graph readily available for use in downstream applications. Our pipeline outperforms existing work in terms of precision, the total number of extractions and the coverage of financial predicates.}
+}
+% shorter version of the PHD thesis above; published
+@inproceedings{2020_finKG_short,
+    title = "A High Precision Pipeline for Financial Knowledge Graph Construction",
+    author = "Elhammadi, Sarah  and
+      V.S. Lakshmanan, Laks  and
+      Ng, Raymond  and
+      Simpson, Michael  and
+      Huai, Baoxing  and
+      Wang, Zhefeng  and
+      Wang, Lanjun",
+    booktitle = "Proceedings of the 28th International Conference on Computational Linguistics",
+    month = dec,
+    year = "2020",
+    address = "Barcelona, Spain (Online)",
+    publisher = "International Committee on Computational Linguistics",
+    url = "https://aclanthology.org/2020.coling-main.84",
+    doi = "10.18653/v1/2020.coling-main.84",
+    pages = "967--977",
+    abstract = "Motivated by applications such as question answering, fact checking, and data integration, there is significant interest in constructing knowledge graphs by extracting information from unstructured information sources, particularly text documents. Knowledge graphs have emerged as a standard for structured knowledge representation, whereby entities and their inter-relations are represented and conveniently stored as (subject,predicate,object) triples in a graph that can be used to power various downstream applications. The proliferation of financial news sources reporting on companies, markets, currencies, and stocks presents an opportunity for extracting valuable knowledge about this crucial domain. In this paper, we focus on constructing a knowledge graph automatically by information extraction from a large corpus of financial news articles. For that purpose, we develop a high precision knowledge extraction pipeline tailored for the financial domain. This pipeline combines multiple information extraction techniques with a financial dictionary that we built, all working together to produce over 342,000 compact extractions from over 288,000 financial news articles, with a precision of 78{\%} at the top-100 extractions.The extracted triples are stored in a knowledge graph making them readily available for use in downstream applications."
+}
+
+ 
+
+
+%#Extraction #finEvent # Chinese
+% 8/10 event extraction, template-slot filling, Chinese financial docs, restricted to 5 types of PRE-DEFINED events [borrow inspiration]
+@Article{2021_TDJEE,
+AUTHOR = {Wang, Peng and Deng, Zhenkai and Cui, Ruilong},
+TITLE = {TDJEE: A Document-Level Joint Model for Financial Event Extraction},
+JOURNAL = {Electronics},
+VOLUME = {10},
+YEAR = {2021},
+NUMBER = {7},
+ARTICLE-NUMBER = {824},
+URL = {https://www.mdpi.com/2079-9292/10/7/824},
+ISSN = {2079-9292},
+ABSTRACT = {Extracting financial events from numerous financial announcements is very important for investors to make right decisions. However, it is still challenging that event arguments always scatter in multiple sentences in a financial announcement, while most existing event extraction models only work in sentence-level scenarios. To address this problem, this paper proposes a relation-aware Transformer-based Document-level Joint Event Extraction model (TDJEE), which encodes relations between words into the context and leverages modified Transformer to capture document-level information to fill event arguments. Meanwhile, the absence of labeled data in financial domain could lead models be unstable in extraction results, which is known as the cold start problem. Furthermore, a Fonduer-based knowledge base combined with the distant supervision method is proposed to simplify the event labeling and provide high quality labeled training corpus for model training and evaluating. Experimental results on real-world Chinese financial announcement show that, compared with other models, TDJEE achieves competitive results and can effectively extract event arguments across multiple sentences.},
+DOI = {10.3390/electronics10070824}
+}
+
+
+%#Extraction #Patent #Technological Information
+% 9/10 - useful framework, pointing word, similarity (patent vs MDA)
+@Article{2017_patent,
+TITLE = {Developing a Methodology of Structuring and Layering Technological Information in Patent Documents through Natural Language Processing},
+AUTHOR = {Roh, Taeyeoun and Jeong, Yujin and Yoon, Byungun},
+JOURNAL = {Sustainability},
+VOLUME = {9},
+YEAR = {2017},
+NUMBER = {11},
+ARTICLE-NUMBER = {2117},
+URL = {https://www.mdpi.com/2071-1050/9/11/2117},
+ISSN = {2071-1050},
+ABSTRACT = {Since patents contain various types of objective technological information, they are used to identify the characteristics of technology fields. Text mining in patent analysis is employed in various fields such as trend analysis and technology classification, and knowledge flow among technologies. However, since keyword-based text mining has the limitation whereby, when screening useful keywords, it frequently omits meaningful keywords, analyzers therefore need to repeat the careful scrutiny of the derived keywords to clarify the meaning of keywords. In this research, we structure meaningful keyword sets related to technological information from patent documents; then we layer the keywords, depending on the level of information. This research involves two steps. First, the characteristics of technological information are analyzed by reviewing the patent law and investigating the description of patent documents. Second, the technological information is structured by considering the information types, and the keywords in each type are layered through natural language processing. Consequently, the structured and layered keyword set does not omit useful keywords and the analyzer can easily understand the meaning of each keyword.},
+DOI = {10.3390/su9112117}
+}
+
+% Extraction #FinEvent #News
+% [TBC 9]/10 - to come
+@phdthesis{2014_finNewsEvents, 
+title={Automated Detection of Financial Events in News Text}, 
+url={http://hdl.handle.net/1765/77237}, 
+school={Erasmus Research Institute of Management (ERIM)}, 
+author={Frederik Hogenboom}, 
+year={2014},
+month = {12}, 
+abstract={Based on a detailed evaluation of current event extraction systems, this thesis presents a competitive, knowledge-driven, semi-automatic system for financial event extraction from text. A novel pattern language, which makes clever use of the system’s underlying knowledge base, allows for the definition of simple, yet expressive event extraction rules that can be applied to natural language texts. The system’s knowledge-driven internals remain synchronized with the latest market developments through the accompanying event-triggered update language for knowledge bases, enabling the definition of update rules.}
+}
+
+% #Extraction #Cause and Effect
+% 9/10 - useful logic rules and linguistic patterns for recognising cause and effect; could be adopted in combination with weak supervision 
+@article{2013_extraction_causeEffect,
+title = {Automatic extraction of cause-effect relations in natural language text},
+author = {Sorgente, Antonio and Vettigli, G. and Mele, Francesco},
+year = {2013},
+month = {01},
+pages = {37-48},
+volume = {1109},
+abstract={The discovery of causal relations from text has been studied adopting various approaches based on rules or Machine Learning (ML) techniques. The approach proposed joins both rules and ML methods to combine the advantage of each one. In particular, our approach first identifies a set of plausible cause-effect pairs through a set of logical rules based on dependencies between words then it uses Bayesian inference to reduce the number of pairs produced by ambiguous patterns. The SemEval-2010 task 8 dataset challenge has been used to evaluate our model. The results demonstrate the ability of the rules for the relation extraction and the improvements made by the filtering process.}
+}
+
+% #Extraction #Concept Map #Croatian
+% 7/10 - relevant idea but quite generic; no implementation details; no visual output; non-English;
+@article{2012_extraction_conceptmap,
+   title={The automatic creation of concept maps from documents written using morphologically rich languages},
+   volume={39},
+   ISSN={0957-4174},
+   url={http://dx.doi.org/10.1016/j.eswa.2012.04.065},
+   DOI={10.1016/j.eswa.2012.04.065},
+   number={16},
+   journal={Expert Systems with Applications},
+   publisher={Elsevier BV},
+   author={Zubrinic, Krunoslav and Kalpic, Damir and Milicevic, Mario},
+   year={2012},
+   month={Nov},
+   pages={12709–12718},
+abstract = {Concept map is a graphical tool for representing knowledge. They have been used in many different areas, including education, knowledge management, business and intelligence. Constructing of concept maps manually can be a complex task; an unskilled person may encounter difficulties in determining and positioning concepts relevant to the problem area. An application that recommends concept candidates and their position in a concept map can significantly help the user in that situation. This paper gives an overview of different approaches to automatic and semi-automatic creation of concept maps from textual and non-textual sources. The concept map mining process is defined, and one method suitable for the creation of concept maps from unstructured textual sources in highly inflected languages such as the Croatian language is described in detail. Proposed method uses statistical and data mining techniques enriched with linguistic tools. With minor adjustments, that method can also be used for concept map mining from textual sources in other morphologically rich languages.}
+}
+
+
+% #Extraction #Complex Sentences
+% 7/10 - outdated but relevant; similar approach / workflow; application area - biomedical text; poor quality of writing 
+@mastersthesis{2005_extraction_complexSentences,
+  title        = {Processing Complex Sentences for Information Extraction},
+  author       = {Deepthi Chidambaram}, 
+  type = {Master's Thesis},
+  school       = {Arizona State University},
+  year         = {2015},
+months = {May},
+abstract      = {This thesis introduces a way of processing information in biomedical text to result in simple syntactic constructs. The aim is to break up complex sentence structures to processable chunks. Information extraction is made easier by the inherent simplicity and dependencies between the chunks. The module presented is a part of an ongoing work to develop an automatic extraction tool for gene and
+protein interactions in biomedical text. The experimental results show that the proposed approach significantly improves the recall of the extraction system.}
+}
+
+% #Extraction #Maps #Chinese News
+% 8/10 - SOM (self-organizing map) algorithm; phrase extraction via frequency reduction; layered map is also interesting 
+@article{2004_extraction_newsmap,
+title = {Newsmap: A knowledge map for online news},
+author = {Ong, Thian-Huat and Chen, Hsiu-chin and Sung, Wai-Ki and Zhu, Bin},
+year = {2004},
+month = {05},
+pages = {583-597},
+volume = {39},
+journal = {Decision Support Systems},
+doi = {10.1016/j.dss.2004.03.008},
+abstract = {This research focuses on the automatic generation of a hierarchical knowledge map NewsMap, based on online Chinese news, particularly the finance and health sections. Whether in print or online, news still represents one important knowledge source that people produce and consume on a daily basis. The hierarchical knowledge,map,can be used as a tool for browsing,business intelligence and medical knowledge hidden in news articles. In order to assess the quality of the map, an empirical study was conducted which shows that the categories of the hierarchical knowledge,map,generated by NewsMap,are better than those generated by regular news readers, both in terms of recall and precision, on the sub-level categories but not on the top-level categories. NewsMap employs,an improved,interface combining,a 1D alphabetical hierarchical list and a 2D Self-Organizing Map (SOM) island display.}
+}
+
+% #Extraction #Old #Template
+% 7/10 - Old but relevant; patterns to fill slots; useful evaluation metric
+@inproceedings{1992_extraction_generatenews,
+    title = "Automatic Extraction of Facts from Press Releases to Generate News Stories",
+    author = "Andersen, Peggy M.  and
+      Hayes, Philip J.  and
+      Weinstein, Steven P.  and
+      Huettner, Alison K.  and
+      Schmandt, Linda M.  and
+      Nirenburg, Irene B.",
+    booktitle = "Third Conference on Applied Natural Language Processing",
+    month = mar,
+    year = "1992",
+    address = "Trento, Italy",
+    publisher = "Association for Computational Linguistics",
+    url = "https://aclanthology.org/A92-1024",
+    doi = "10.3115/974499.974531",
+    pages = "170--177",
+abstract={While complete understanding of arbitrary input text remains in the future, it is currently possible to construct natural language processing systems that provide a partial understanding of text with limited accuracy. Moreover, such systems can provide cost-effective solutions to commercially-significant business problems. This paper describes one such system: JASPER. JASPER is a fact extraction system recently developed and deployed by Carnegie Group for Reuters Ltd. JASPER uses a template-driven approach, partial understanding techniques, and heuristic procedures to extract certain key pieces of information from a limited range of text.We believe that many significant business problems can be solved by fact extraction applications which involve locating and extracting specific, predefined types of information from a limited range of text. The information extracted by such systems can be used in a variety of ways, such as filling in values in a database, generating summaries of the input text, serving as a part of the knowledge in an expert system, or feeding into another program which bases decisions on it. We expect to develop many such applications in the future using similar techniques.}
+}
+
+
+% #Classification #finEvent
+% 6/10 basic jointly learning model (pre-trained BERT); end application not very clear; small dataset (1600 docs) and manual annotation.
+@inproceedings{2020_unifiedmodel,
+  title     = {A Unified Model for Financial Event Classification, Detection and Summarization},
+  author    = {Li, Quanzhi and Zhang, Qiong},
+  booktitle = {Proceedings of the Twenty-Ninth International Joint Conference on
+               Artificial Intelligence, {IJCAI-20}},
+  publisher = {International Joint Conferences on Artificial Intelligence Organization},
+  editor    = {Christian Bessiere},
+  pages     = {4668--4674},
+  year      = {2020},
+  month     = {7},
+  note      = {Special Track on AI in FinTech},
+  doi       = {10.24963/ijcai.2020/644},
+  url       = {https://doi.org/10.24963/ijcai.2020/644},
+abstract = {There is massive amount of news on financial events every day. In this paper, we present a unified model for detecting, classifying and summarizing financial events. This model exploits a multi-task learning approach, in which a pre-trained BERT model is used to encode the news articles, and the encoded information are shared by event type classification, detection and summarization tasks. For event summarization, we use a Transformer structure as the decoder. In addition to the input document encoded by BERT, the decoder also utilizes the predicted event type and cluster information, so that it can focus on the specific aspects of the event when generating summary. Our experiments show that our approach outperforms other methods.},
+}
+
+% #Classification #EDGAR #Legal
+% 8/10 - text classification based on EDGAR documents, legal text, financial documents, code base available
+@inproceedings{2020_ledgar,
+    title = "{LEDGAR}: A Large-Scale Multi-label Corpus for Text Classification of Legal Provisions in Contracts",
+    author = {Tuggener, Don and von D{\"a}niken, Pius  and  Peetz, Thomas  and  Cieliebak, Mark},
+    booktitle = "Proceedings of the 12th Language Resources and Evaluation Conference",
+    month = may,
+    year = "2020",
+    address = "Marseille, France",
+    publisher = "European Language Resources Association",
+    url = "https://aclanthology.org/2020.lrec-1.155",
+    pages = "1235--1241",
+    abstract = "We present LEDGAR, a multilabel corpus of legal provisions in contracts. The corpus was crawled and scraped from the public domain (SEC filings) and is, to the best of our knowledge, the first freely available corpus of its kind. Since the corpus was constructed semi-automatically, we apply and discuss various approaches to noise removal. Due to the rather large labelset of over 12{'}000 labels annotated in almost 100{'}000 provisions in over 60{'}000 contracts, we believe the corpus to be of interest for research in the field of Legal NLP, (large-scale or extreme) text classification, as well as for legal studies. We discuss several methods to sample subcopora from the corpus and implement and evaluate different automatic classification approaches. Finally, we perform transfer experiments to evaluate how well the classifiers perform on contracts stemming from outside the corpus.",
+    language = "English",
+    ISBN = "979-10-95546-34-4",
+}
+
+% #Classification
+% 6/10 - not very relevant; pre-defined categories on income tax notes, limited scope, very basic classification
+@inproceedings{2015_taxnotes,
+  title={Financial Footnote Analysis: Developing a Text Mining Approach},
+  author={Maryam Heidari and Carsten Felden},
+  year={2015},
+booktitle={International Conference Data Mining (DMIN 15)},
+abstract={inancial footnotes analysis provides an opportunity to communicate with stakeholders beyond the numbers in the main body of financial statements. The combination of values in financial reports and their disclosure in footnote parts supports financial decisions in a wisely manner. Nevertheless, the unstructured nature of footnotes poses a barrier for an accurate, automatic, and real-time financial analysis. To address this issue, this paper implements a text classification procedure to evaluate the benefits of text mining deployment to react to the manual financial footnote analysis. This supports the classification of textual parts of financial footnotes automatically into related financial categories, which are relevant for financial analysts, in order to avoid reading entire textual parts manually. This research provides useful insights about the impact of using text mining for an automatic financial footnote analysis in terms of time saving and increasing accuracy}
+}
+
+
+% #Knowledge Graph
+
+% #KG #Dataset #Benchmarking #Chinese
+% [TODO ?]/10 - to come
+@article{2021_KG_researchreport,
+    title = "{Data Set and Evaluation of Automated Construction of Financial Knowledge Graph}",
+    author = {Wang, Wenguang and Xu, Yonglin and Du, Chunhui and Chen, Yunwen and Wang, Yijie and Wen, Hui},
+    journal = {Data Intelligence},
+    volume = {3},
+    number = {3},
+    pages = {418-443},
+    year = {2021},
+    month = {09},
+    abstract = {we built a high-quality data set, named financial research report knowledge graph (FR2KG), and organized the automated construction of financial knowledge graph evaluation at the 2020 China Knowledge Graph and Semantic Computing Conference (CCKS2020). FR2KG consists of 17,799 entities, 26,798 relationship triples, and 1,328 attribute triples covering 10 entity types, 19 relationship types, and 6 attributes. Participants are required to develop a constructor that will automatically construct a financial knowledge graph based on the FR2KG. In addition, we summarized the technologies for automatically constructing knowledge graphs, and introduced the methods used by the winners and the results of this evaluation.},
+    issn = {2641-435X},
+    doi = {10.1162/dint_a_00108},
+    url = {https://doi.org/10.1162/dint\_a\_00108},
+    eprint = {https://direct.mit.edu/dint/article-pdf/3/3/418/1969127/dint\_a\_00108.pdf},
+}
+
+
+% 8/10 - applying KG to extract features - TransE a bit 'forced'; KG as a means to the end; results not very impressive; some useful discussion of limitations
+@article{2019_KG_finNews_price,
+  title={Anticipating Stock Market of the Renowned Companies: A Knowledge Graph Approach},
+  author={Yang Liu and Qingguo Zeng and Joaqu{\'i}n B. Ordieres Mer{\'e} and Huanrui Yang},
+  journal={Hindawi Complexity},
+  year={2019},
+  volume={2019},
+  pages={9202457:1-9202457:15},
+
+abstract={ In this study, the goal is to establish a model for predicting stock price movement through knowledge graph from the financial news of the renowned companies. In contrast to traditional methods of stock prediction, our approach considers the effects of event tuple characteristics on stocks on the basis of knowledge graph and deep learning. The proposed model and other feature selection models were used to perform feature extraction on the websites of Thomson Reuters and Cable News Network. Numerous experiments were conducted to derive evidence of the effectiveness of knowledge graph embedding for classification tasks in stock prediction. A comparison of the average accuracy with which the same feature combinations were extracted over six stocks indicated that the proposed method achieves better performance than that exhibited by an approach that uses only stock data, a bag-of-words method, and convolutional neural network. Our work highlights the usefulness of knowledge graph in implementing business activities and helping practitioners and managers make business decisions.}
+}
+
+% 8/10 - Similar idea as above; same first author, published one year earlier
+@inbook{2018_KG_finNews_price,
+title = {Stock Price Movement Prediction from Financial News with Deep Learning and Knowledge Graph Embedding},
+author = {Liu, Yang and Zeng, Qingguo and Yang, Huanrui and Carrio, Adrian},
+year = {2018},
+month = {07},
+pages = {102-113},
+isbn = {978-3-319-97288-6},
+doi = {10.1007/978-3-319-97289-3_8},
+abstract={In this paper, we propose to incorporate a joint model using the TransE model for representation learning and a Convolutional Neural Network (CNN), which extracts features from financial news articles. This joint learning can improve the accuracy of text feature extraction while reducing the sparseness of news headlines. On the other hand, we present a joint feature extraction method which extracts feature vectors from both daily trading data and technical indicators. The approach is evaluated using Support Vector Machines (SVM) as a traditional machine learning method and Long Short-term Memory (LSTM) model as a deep learning method. The proposed model is used to predict Apple’s stock price movement using the Standard \& Poor’s 500 index (S\&P 500). The experiments show that the accuracy of news sentiment classification for feature selection achieved 97.66\% by model of joint learning, the performance of joint learning is better than feature extraction by CNN, the accuracy of stock price movement prediction through deep learning achieved 55.44\%, this result is higher than traditional machine learning. This model can give the investors greater decision support.}
+}
+
+% 9/10 - SEC filings to KG construction; focused on directors/executives; no visualization of output
+@InProceedings{2018_KG_directors,
+  title = {Mapping Deep NLP to Knowledge Graphs: An Enhanced Approach to Analyzing Corporate Filings with Regulators},
+  author = {Damir Cavar and Matthew Josefy},
+  booktitle = {Proceedings of the Eleventh International Conference on Language Resources and Evaluation (LREC 2018)},
+  year = {2018},
+  month = {may},
+  date = {7-12},
+  location = {Miyazaki, Japan},
+  editor = {Mahmoud El-Haj and Paul Rayson and Andrew Moore},
+  publisher = {European Language Resources Association (ELRA)},
+  address = {Paris, France},
+  isbn = {979-10-95546-23-8},
+  language = {english},
+abstract={We construct a comprehensive pipeline that extracts the original filings, processes them in order to recognize component segments for distinct analysis, feeds each text through multiple NLP processors to obtain optimal recognition of the linguistic properties, and ultimately seeks to construct a comprehensive knowledge graph of how companies, their executives and their directors are linked to one another, or how various risks are identified, weighted, and handled over long periods of time. We thus link advanced NLP techniques and knowledge graphing approaches, contributing greater domain specific knowledge to advance linguistic approaches and potentially discovering underlying networks that would be difficult to detect with other approaches.}
+ }
+
+% 7/10 - KG focused on shareholding, cooperation, management, and supply-customer. sentiment dictionary, Chinese news 
+@inproceedings{2018_KG_sentimentPrice,
+  title={Combining Enterprise Knowledge Graph and News Sentiment Analysis for Stock Price Volatility Prediction},
+  author={Jue Liu},
+  year={2018},
+URI=	{http://hdl.handle.net/10125/59565},
+ISBN= {978-0-9981331-2-6},
+DOI=	{10.24251/HICSS.2019.153},
+booktitle={Proceedings of the 52nd Hawaii International Conference on System Sciences},
+abstract={Many state of the art methods analyze sentiments in news to predict stock price. When predicting stock price movement, the correlation between stocks is a factor that can’t be ignored because correlated stocks could cause co-movement. Traditional methods of measuring the correlation between stocks are mostly based on the similarity between corresponding stock price data, while ignoring the business relationships between companies, such as shareholding, cooperation and supply-customer relationships. To solve this problem, this paper proposes a new method to calculate the correlation by using the enterprise knowledge graph embedding that systematically considers various types of relationships between listed stocks. Further, we employ Gated Recurrent Unit (GRU) model to combine the correlated stocks’ news sentiment, the focal stock’s news sentiment and the focal stock’s quantitative features to predict the focal stock’s price movement. Results show that our method has an improvement of 8.1\% compared with the traditional method.}
+}
+
+
+% #Background
+
+% 10/10 - good background information on EDGAR
+@misc{2018_openedgar,
+      title={OpenEDGAR: Open Source Software for SEC EDGAR Analysis}, 
+      author={Michael J Bommarito II au2 and Daniel Martin Katz and Eric M Detterman},
+      year={2018},
+      eprint={1806.04973},
+      archivePrefix={arXiv},
+      primaryClass={cs.CL},
+abstract={OpenEDGAR is an open source Python framework designed to rapidly construct research databases based on the Electronic Data Gathering, Analysis, and Retrieval (EDGAR) system operated by the US Securities and Exchange Commission (SEC). OpenEDGAR is built on the Django application framework, supports distributed compute across one or more servers, and includes functionality to (i) retrieve and parse index and filing data from EDGAR, (ii) build tables for key metadata like form type and filer, (iii) retrieve, parse, and update CIK to ticker and industry mappings, (iv) extract content and metadata from filing documents, and (v) search filing document contents. OpenEDGAR is designed for use in both academic research and industrial applications, and is distributed under MIT License}
+}
+
+% 10/10 - comprehensive basic NLP textbook material
+@article{2020_basicNLP,
+title = {Progress in Neural NLP: Modeling, Learning, and Reasoning},
+journal = {Engineering},
+volume = {6},
+number = {3},
+pages = {275-290},
+year = {2020},
+issn = {2095-8099},
+doi = {https://doi.org/10.1016/j.eng.2019.12.014},
+url = {https://www.sciencedirect.com/science/article/pii/S2095809919304928},
+author = {Ming Zhou and Nan Duan and Shujie Liu and Heung-Yeung Shum},
+keywords = {Natural language processing, Deep learning, Modeling, learning, and reasoning},
+abstract = {Natural language processing (NLP) is a subfield of artificial intelligence that focuses on enabling computers to understand and process human languages. In the last five years, we have witnessed the rapid development of NLP in tasks such as machine translation, question-answering, and machine reading comprehension based on deep learning and an enormous volume of annotated and unannotated data. In this paper, we will review the latest progress in the neural network-based NLP framework (neural NLP) from three perspectives: modeling, learning, and reasoning. In the modeling section, we will describe several fundamental neural network-based modeling paradigms, such as word embedding, sentence embedding, and sequence-to-sequence modeling, which are widely used in modern NLP engines. In the learning section, we will introduce widely used learning methods for NLP models, including supervised, semi-supervised, and unsupervised learning; multitask learning; transfer learning; and active learning. We view reasoning as a new and exciting direction for neural NLP, but it has yet to be well addressed. In the reasoning section, we will review reasoning mechanisms, including the knowledge, existing non-neural inference methods, and new neural inference methods. We emphasize the importance of reasoning in this paper because it is important for building interpretable and knowledge-driven neural NLP models to handle complex tasks. At the end of this paper, we will briefly outline our thoughts on the future directions of neural NLP.}
+}
+
+% #Financial Table #Graph based
+% 3/10 - conversion of PDF table to JSON, not very relevant 
+@misc{li2020gfte,
+      title={GFTE: Graph-based Financial Table Extraction}, 
+      author={Yiren Li and Zheng Huang and Junchi Yan and Yi Zhou and Fan Ye and Xianhui Liu},
+      year={2020},
+      eprint={2003.07560},
+      archivePrefix={arXiv},
+      primaryClass={cs.CV},
+abstract={Tabular data is a crucial form of information expression, which can organize data in a standard structure for easy information retrieval and comparison. However, in financial industry and many other fields tables are often disclosed in unstructured digital files, e.g. Portable Document Format (PDF) and images, which are difficult to be extracted directly. In this paper, to facilitate deep learning based table extraction from unstructured digital files, we publish a standard Chinese dataset named FinTab, which contains more than 1,600 financial tables of diverse kinds and their corresponding structure representation in JSON. In addition, we propose a novel graph-based convolutional neural network model named GFTE as a baseline for future comparison. GFTE integrates image feature, position feature and textual feature together for precise edge prediction and reaches overall good results.}
+}
+
+% #Background #FinancialPlanning #Amateurish
+% 3/10 - some useful background information, very 'watery' MBA non-finance, not computer science, no programming, not impressive at all.
+@mastersthesis{2021_MBAbla,
+  author       = {Yih-Shan Sheu}, 
+  title        = {Leveraging Text Mining and Analytical Technology to Enhance Financial Planning and Analysis},
+type = {Master's Thesis},
+school       = {Iowa State University},
+  year         = {2021},
+  url = {https://lib.dr.iastate.edu/creativecomponents/810},  
+abstract      = {This study aims to answer the following two research questions: (i) How to handle unstructured information to gain an in-depth understanding of qualitative data that will impact the financial performance; (ii) How could machine learning help Corporate Finance acquire better market trend insights and achieve precise sales prediction as well as financial forecasting? In order to answer these questions, a qualitative analysis of literature is carried out comprehensively. Recent research and study indicate that such applications in corporate finance can significantly benefit the corporate decision-making process due to more timely, more relevant, and customer-oriented factors involving qualitative data sources. Finally, the paper briefly discusses the current challenges and limitations and points out the potential future scope of data technology in corporate finance.}
+}
+
+%#Background #Mindmap
+% 1/10 - Not useful; content not relevant; interesting framework: add, analyze, revise; definition of mindmap - spatial
+@article{2018_mindmap,
+title = {Beyond concept analysis: Uses of mind mapping software for visual representation, management, and analysis of diverse digital data},
+author = {Mammen, Jennifer and Mammen, Corey},
+year = {2018},
+month = {11},
+pages = {},
+volume = {41},
+journal = {Research in Nursing \& Health},
+doi = {10.1002/nur.21920},
+abstract={Mind mapping is a visual‐spatial method of representing information using nodes (information segments) to show ideas and connecting lines to define relationships between content. As a critical thinking tool, it is applicable to a range of research activities, including information management, project development, and data analysis. The purposes of this manuscript are to describe the use of mapping for qualitative data analysis, provide step‐by‐step instructions of how to construct mind maps, and present examples specific to qualitative data analysis. An example from a recent study of patient and provider perceptions of virtual visits demonstrates the use of Xmind in conjunction with Atlas.ti for qualitative content analysis of open‐ended survey data. ... This technique can be used to manage diverse content (documents, audio/video file, image, web links, and personal notes) and thus has great potential to contribute to a variety of data management tasks.}
+
+}
+
+% #Background #Causal #Annotation
+% 1/10 - not relevant; semantic annotation schema; toy dataset - 320 short stories
+@inproceedings{2016_CaTeRS,
+    title = "{C}a{T}e{RS}: Causal and Temporal Relation Scheme for Semantic Annotation of Event Structures",
+    author = "Mostafazadeh, Nasrin  and
+      Grealish, Alyson  and
+      Chambers, Nathanael  and
+      Allen, James  and
+      Vanderwende, Lucy",
+    booktitle = "Proceedings of the Fourth Workshop on Events",
+    month = jun,
+    year = "2016",
+    address = "San Diego, California",
+    publisher = "Association for Computational Linguistics",
+    url = "https://aclanthology.org/W16-1007",
+    doi = "10.18653/v1/W16-1007",
+    pages = "51--61",
+abstract={In this paper we introduce a novel semantic annotation framework, called Causal and Temporal Relation Scheme (CaTeRS), which is unique in simultaneously capturing a comprehensive set of temporal and causal relations between events. By annotating a total of 1,600 sentences in the context of 320 five-sentence short stories sampled from ROCStories corpus, we demonstrate that these stories are indeed full of causal and temporal relations. Furthermore, we show that the CaTeRS annotation scheme enables high inter-annotator agreement for broad-coverage event entity annotation and moderate agreement on semantic link annotation.}
+}
+
+% #Background #Causal #Time Series #Just Price no text
+% 6/10 - not based on text just time series of price data; interesting propositional probalistic temporal logic form; dubious assumptions re normal distribution. not very relevant
+@article{2010_causal,
+title = {Investigating Causal Relationships in Stock Returns with Temporal Logic Based Methods},
+author = {Kleinberg, Samantha and Kolm, Petter and Mishra, Bud},
+year = {2010},
+month = {06},
+pages = {},
+abstract={We describe a new framework for causal inference and its application to return time series. In this system, causal relationships are represented as logical formulas, allowing us to test arbitrarily complex hypotheses in a computationally efficient way. We simulate return time series using a common factor model, and show that on this data the method described significantly outperforms Granger causality (a primary approach to this type of problem). Finally we apply the method to real return data, showing that the method can discover novel relationships between stocks. The approach described is a general one that will allow combination of price and volume data with qualitative information at varying time scales (from interest rate announcements, to earnings reports to news stories) shedding light on some of the previously invisible common causes of seemingly correlated price movements.}
+}
+
+% #Background #Link Analysis #Document Relatedness
+% 1/10 - not relevant
+@inproceedings{2010_linkanalysis,
+title = {Link Analysis in Mind Maps: A New Approach To Determine Document Relatedness},
+author = {Beel, Joeran and Gipp, Bela},
+year = {2010},
+month = {01},
+pages = {},
+journal = {Proceedings of the 4th International Conference on Ubiquitous Information Management and Communication ICUIMC 10},
+doi = {10.1145/2108616.2108662},
+abstract={In a previous paper we presented various ideas on how information retrieval on mind maps could enhance applications such as expert systems, search engines and recommender systems. In this paper we present the first research results. In a brief experiment we researched link analysis respectively citation analysis, if applied to mind maps, is suitable to calculate document relatedness. The basic idea is that if two documents A and B are linked by the same mind map, these documents are likely to be related. This information could be used by item-based document recommender systems. In the example, document B could be recommended to those users interested in document A. In addition, we propose that those documents linked in high proximity within a mind map are more closely related than those documents linked in lower proximity. The results of our experiment support our ideas. It seems that link analysis applied to mind maps can be used for determining the relatedness of documents and therefore for improving document recommender systems.}
+}
+
+
+% #TODO #Background #Reasoning #QA #NLU
+% [TBC 9]/10 - comprehensive coverage of reasoning, formalism and NLU
+@phdthesis{2019_reasoningQA, 
+title={Reasoning-Driven Question-Answering For Natural Language Understanding}, 
+school={University of Pennsylvania}, 
+author={Daniel Khashabi}, 
+year={2019},
+month = {}, 
+url={https://repository.upenn.edu/edissertations/3271}, 
+abstract={In this thesis, we investigate the NLU problem through the QA task and focus on the aspects that make it a challenge for the current state-of-the-art technology. i) In the first part, we explore multiple formalisms to improve existing machine comprehension systems. We propose a formulation for abductive reasoning in natural language and show its effectiveness, especially in domains with limited training data. In the second part, we propose two new challenge datasets. In particular, we create two
+datasets of natural language questions where (i) the first one requires reasoning over multiple sentences; (ii) the second one requires temporal common sense reasoning. In the final part, we present the first formal framework for multi-step reasoning algorithms, in the presence of a few important properties of language use, such as incompleteness, ambiguity, etc.}
+}
+
+
+

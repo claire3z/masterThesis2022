@@ -1,0 +1,336 @@
+% a minimum example with reference
+\documentclass[10pt]{article}
+\usepackage[english]{babel}
+\usepackage{makeidx}
+\usepackage{hyperref} % click on ref to take it there
+\usepackage{url}
+\usepackage{graphicx}
+\usepackage{setspace}
+
+\usepackage[pass]{geometry} % set page margin
+\usepackage{longtable} % table spanning several pages
+\usepackage{array} % set table column width
+\usepackage[table]{xcolor} % highlight table rows
+\usepackage{lscape} % set certain pages landscape
+
+\begin{document}
+
+\section{Related Work}
+
+The collection of papers with detailed notes can be found here: \\
+~\url {https://drive.google.com/drive/folders/1GSDjs8FwtoIpJVbJ-g2lYR7QRO-MO4xB?usp=sharing}
+
+
+% Landscape long table with less margin
+\newgeometry{margin=2.3cm} 
+\begin{landscape}
+\begin{longtable}{ |m{2em}|m{28em}|m{3em}|m{24em}| } 
+ \hline
+Ref. & Title & Score & Comments \\ 
+ \hline
+ 
+%----------------------------------------------------------------------------------%
+\rowcolor{lightgray}\multicolumn{4}{|l|}{Surveys} \\
+ \hline 
+ 
+~\cite{2021_survey_extraction_causality} & \emph{(2021) A Survey on Extraction of Causal Relations from Natural Language Text} & \textbf{10/10} & causality extraction, good comparison and summary, structured view; useful information on dataset (pros/cons + limitations) \\
+ \hline
+~\cite{2021_survey_textanalysis_fin} & \emph{(2021) Text analysis in financial disclosures} & \textbf{10/10} & good background info; very relevant; reference comparison embedded in text (not in tables)\\
+ \hline
+~\cite{2021_survey_causalInfer} &\emph{(2021) Causal Inference in Natural Language Processing: Estimation, Prediction, Interpretation and Beyond}&
+\textbf{4/10} & causal inference, not very relevant; deducing cause and effect for social science, not concrete identification and extraction of causal phrases.\\
+ \hline
+
+~\cite{2020_survey_textmining_finance} &\emph{(2020) Comprehensive review of text-mining applications in finance}
+& \textbf{3/10} & badly written, not very comprehensive, some interesting references\\
+ \hline
+
+~\cite{2019_survey_textmining_fin} &\emph{(2019) Text Mining in Financial Information}
+& \textbf{9/10} & poorly written, summary table very useful references \\
+ \hline
+
+~\cite{2019_survey_textmining_financialsector} & \emph{(2019) Text Mining for Big Data Analysis in Financial Sector: A Literature Review} 
+& \textbf{7/10} & some useful pointers, interesting methodology of identifying key research paper - network analysis\\
+ \hline
+
+~\cite{2019_survey_causaldependencies} &\emph{(2019) Identification of Causal Dependencies by Using Natural Language Processing: A Survey}
+& \textbf{5/10} & not very comprehensive/concrete; some reference might be useful\\
+ \hline
+
+~\cite{2016_survey} & \emph{(2016) Textual analysis and machine leaning: Crack unstructured data in finance and accounting}
+& \textbf{4/10} & very basic, a bit outdated; mainly classification and LDA analysis\\
+ \hline
+
+%----------------------------------------------------------------------------------%
+\rowcolor{lightgray}\multicolumn{4}{|l|}{Support} \\
+ \hline 
+% #Perspective #Management/Accounting 
+~\cite{2019_FadorFuture} &\emph{(2019) Fad or future? Automated analysis of financial text and its implications for corporate reporting}
+& \textbf{10/10} & very RELEVANT! addresses key issues with critical reflection; management/accounting perspective; good writing style\\
+ \hline
+
+% #Causality #Support #Analysts behaviour
+~\cite{2018_causal_finan} &\emph{(2018) Causal language intensity in performance commentary and financial analyst behaviour}
+& \textbf{10/10} & very RELEVANT; provide a support base for further studies\\
+ \hline
+
+% #EDA #Visualisation # 
+~\cite{2018_financialPerformance} & \emph{(2018) About relationship between business text patterns and financial performance in corporate data}
+& \textbf{9/10} & helpful conclusions re word counts and sentiment; useful visualisation for EDA\\
+ \hline
+
+% #Emerging Trends Identification
+~\cite{2017_identifyTrends} & \emph{(2017) Identifying Emerging Trends of Financial Business Method Patents}
+& \textbf{4/10} & interesting approach of identifying emerging trends, questionable relevance - mainly topic modelling / LDA; survial analysis, hot vs. cold \\
+ \hline
+
+% #Support #Attribution
+~\cite{2016_attribution} & \emph{(2016) Learning tone and attribution for financial text mining}
+& \textbf{7/10} & useful list of key words; basic; some good reference; public dataset for benchmarking?\\
+ \hline
+
+% #Support #Information Content Measures
+~\cite{2012_beyondNumbers} & \emph{(2012) Beyond the Numbers: Measuring the Information Content of Earnings Press Release Language}
+& \textbf{7/10} & important word list, prior research theories\\
+ \hline
+
+% #Support #Verbs dictionary #Earnings Annnouncement #Market Reaction
+~\cite{2007_verbal_market} & \emph{(2007) Market Reaction to Verbal Components of Earnings Press Releases: Event Study Using a Predictive Algorithm}
+& \textbf{9/10} & a bit outdated but provides theoretical support; useful thesaurus list\\
+ \hline
+
+% #Support #Self-organising Map
+~\cite{2002_textmining_finreport} & \emph{(2002) Combining data and text mining techniques for analysing financial reports}
+& \textbf{8/10} & outdated but interesting SOM algorithm, sort of in the right direction\\
+ \hline
+
+%----------------------------------------------------------------------------------%
+\rowcolor{lightgray}\multicolumn{4}{|l|}{Extraction / Semantic Parsing} \\
+ \hline 
+
+% #Extraction #FinEvents #Template-Slots #Chinese
+~\cite{2021_TDJEE} & \emph{(2021) TDJEE: A Document-Level Joint Model for Financial Event Extraction}
+& \textbf{8/10} & event extraction, template-slot filling, Chinese financial docs, restricted to 5 types of PRE-DEFINED events \\
+ \hline
+
+% #Extraction #Maths textbook #Network
+~\cite{2020_semanticNetworkMathText} & \emph{(2020) Architecture and Evolution of Semantic Networks in Mathematics Texts}
+& \textbf{9/10} & linear algebra text book, pre-defined terms, concept gaps, core vs peripheral\\
+ \hline
+
+% #Extraction #History textbook #Mindmap
+~\cite{2021_historyTextbook} & \emph{(2021) Mind Map Automation: Using Natural Language Processing to Graphically Represent a Portion of a U.S. History Textbook}
+& \textbf{5/10} & interesting application history text book, but very simplistic - BERT summarization in original sentence\\
+ \hline
+
+% Extraction #Semantic Parsing #Recipe
+~\cite{2019_semanticParsing_cookingRecipes} & \emph{(2019) A Study on Semantic Parsing of Cooking Recipes}
+& \textbf{9/10} & good elaboration on background concepts and models ('dependency parser', 'NER', 'Frame and slots', etc.); strong introduction but weaker body of content; annotation schema not relevant\\
+ \hline
+
+% #Extraction #FinNews #Knowledge Graph
+~\cite{2020_finKG_thesis} & \emph{(2020) Financial Knowledge Graph Construction} 
+& \textbf{7/10} &  \\
+\hline
+
+~\cite{2020_finKG_short} & \emph{(2020) A High Precision Pipeline for Financial Knowledge Graph Construction}
+& \textbf{7/10} & PhD thesis and a shorter version in a publish paper; interesting pipeline and implementation details; useful lexicon terms and bigrams; events mostly on announcement, appointment, M\&A, etc. \\
+ \hline
+
+% #Extraction #FinNews #Knowledge Graph
+~\cite{2021_finKGhybrid}  &\emph{(2021) Exploring Construction of a Company Domain-Specific Knowledge Graph from Financial Texts Using Hybrid Information Extraction}
+& \textbf{[8]/10} & Master's thesis. Company-specific entity relationships; hybrid approach (rule-based lexical patterns + pre-trained); to be looked into details\\
+ \hline
+
+%#Extraction #Patent #Technological Information
+~\cite{2017_patent} & \emph{(2017) Developing a Methodology of Structuring and Layering Technological Information in Patent Documents through Natural Language Processing}
+& \textbf{9/10} & useful framework, pointing word, similarity (patent vs MDA)\\
+ \hline
+
+% Extraction #FinEvent #News
+~\cite{2014_finNewsEvents} & \emph{(2014) Automated Detection of Financial Events in News Text}
+& \textbf{[.]/10} & PhD thesis. Very detailed. \\
+ \hline
+
+% #Extraction #Cause and Effect
+~\cite{2013_extraction_causeEffect} & \emph{(2013) Automatic extraction of cause-effect relations in natural language text}
+& \textbf{9/10} & useful logic rules and linguistic patterns for recognising cause and effect; could be adopted in combination with weak supervision \\
+ \hline
+
+% #Extraction #Concept Map #Croatian
+~\cite{2012_extraction_conceptmap} & \emph{(2012) The automatic creation of concept maps from documents written using morphologically rich languages}
+& \textbf{7/10} & relevant idea but quite generic; no implementation details; no visual output; non-English\\
+ \hline
+
+% #Extraction #Complex Sentences
+~\cite{2005_extraction_complexSentences} & \emph{(2005) Processing Complex Sentences for Information Extraction}
+& \textbf{7/10} & outdated but relevant; similar approach / workflow; application area - biomedical text; poor quality of writing \\
+ \hline
+
+% #Extraction #Maps #Chinese News
+~\cite{2004_extraction_newsmap} & \emph{(2004) Newsmap: A knowledge map for online news}
+& \textbf{8/10} & SOM (self-organizing map) algorithm; phrase extraction via frequency reduction; layered map is also interesting \\
+ \hline
+
+% #Extraction #Old #Template
+~\cite{1992_extraction_generatenews} & \emph{(1992) Automatic Extraction of Facts from Press Releases to Generate News Stories}
+& \textbf{7/10} & Old but relevant; patterns to fill slots; useful evaluation metric\\
+ \hline 
+
+
+%----------------------------------------------------------------------------------%
+\rowcolor{lightgray}\multicolumn{4}{|l|}{Text Classification} \\
+ \hline 
+
+% #Classification #FinEvents #Manual annotation
+~\cite{2020_unifiedmodel} &\emph{(2020) A Unified Model for Financial Event Classification, Detection and Summarization}
+& \textbf{6/10} & basic jointly learning model; end application not very clear; small dataset (1600 docs) and manual annotation\\
+ \hline 
+
+% #Classification #EDGAR #Legal
+~\cite{2020_ledgar} & \emph{(2020) {LEDGAR}: A Large-Scale Multi-label Corpus for Text Classification of Legal Provisions in Contracts}
+& \textbf{8/10} & text classification based on EDGAR documents, legal text, financial documents, code base available\\
+ \hline 
+
+% #Classification #Tax notes
+~\cite{2015_taxnotes} & \emph{(2015) Financial Footnote Analysis: Developing a Text Mining Approach}
+& \textbf{6/10} & not very relevant; pre-defined categories on income tax notes, limited scope, very basic classification\\
+ \hline 
+
+
+%----------------------------------------------------------------------------------%
+\rowcolor{lightgray}\multicolumn{4}{|l|}{Knowledge Graph} \\
+ \hline 
+% #Knowledge Graph
+
+~\cite{2021_KG_researchreport} & \emph{(2021) Data Set and Evaluation of Automated Construction of Financial Knowledge Graph}
+& \textbf{[.]/10} & to come\\
+ \hline 
+
+~\cite{2019_KG_finNews_price} & \emph{(2019) Anticipating Stock Market of the Renowned Companies: A Knowledge Graph Approach}
+& \textbf{8/10} & applying KG to extract features - TransE a bit 'forced'; results not very impressive; some useful discussion of limitations\\
+ \hline 
+
+~\cite{2018_KG_finNews_price} & \emph{(2018) Stock Price Movement Prediction from Financial News with Deep Learning and Knowledge Graph Embedding}
+& \textbf{8/10} & Similar idea as above; same first author, published one year earlier\\
+ \hline 
+
+~\cite{2018_KG_directors} & \emph{(2018) Mapping Deep NLP to Knowledge Graphs: An Enhanced Approach to Analyzing Corporate Filings with Regulators}
+& \textbf{9/10} & SEC filings to KG construction; focused on directors/executives; no visualization of output\\
+ \hline 
+
+~\cite{2018_KG_sentimentPrice} & \emph{(2018) Combining Enterprise Knowledge Graph and News Sentiment Analysis for Stock Price Volatility Prediction}
+& \textbf{7/10} & KG focused on shareholding, cooperation, management, and supply-customer. sentiment dictionary, Chinese news \\
+ \hline 
+
+
+%----------------------------------------------------------------------------------%
+\rowcolor{lightgray}\multicolumn{4}{|l|}{Background} \\
+ \hline 
+
+% #Relevant but not useful
+~\cite{2021_MBAbla} & \emph{(2021) Leveraging Text Mining and Analytical Technology to Enhance Financial Planning and Analysis}
+& \textbf{3/10} & some useful background information, very 'watery' MBA non-finance, not computer science, no programming, not impressive at all.\\
+ \hline 
+
+
+
+% #EDGAR #Tools
+~\cite{2018_openedgar} & \emph{(2018) OpenEDGAR: Open Source Software for SEC EDGAR Analysis}
+& \textbf{9/10} & GOOD background information on EDGAR\\
+ \hline 
+
+% #NLP Basics 
+~\cite{2020_basicNLP} & \emph{(2020) Progress in Neural NLP: Modeling, Learning, and Reasoning}
+& \textbf{9/10} & comprehensive basic NLP textbook material\\
+ \hline 
+
+% #Concept maps
+~\cite{2018_mindmap} & \emph{(2018) Beyond concept analysis: Uses of mind mapping software for visual representation, management, and analysis of diverse digital data}
+& \textbf{1/10} & Not useful; content not relevant; interesting framework: add, analyze, revise; definition of mindmap - spatial\\
+ \hline 
+
+% #Background #Causal #Annotation
+~\cite{2016_CaTeRS} & \emph{(2018) "{C}a{T}e{RS}: Causal and Temporal Relation Scheme for Semantic Annotation of Event Structures"}
+& \textbf{1/10} & not relevant; semantic annotation schema; toy dataset - 320 short stories\\
+ \hline 
+
+% #Background #Causal #Time Series #Just Price no text
+~\cite{2010_causal} & \emph{(2010) Investigating Causal Relationships in Stock Returns with Temporal Logic Based Methods}
+& \textbf{4/10} & not based on text analytics just time series of price data; interesting propositional probabilistic temporal logic form; dubious assumptions re normal distribution. not very relevant\\
+ \hline 
+
+% #Background #Link Analysis #Document Relatedness
+~\cite{2010_linkanalysis} & \emph{(2010) Link Analysis in Mind Maps: A New Approach To Determine Document Relatedness}
+& \textbf{1/10} & not relevant\\
+ \hline 
+
+% #TODO #Background #Reasoning #QA #NLU
+~\cite{2019_reasoningQA} & \emph{(2019) Reasoning-Driven Question-Answering For Natural Language Understanding}
+& \textbf{[.]/10} & comprehensive coverage of reasoning, formalism and NLU\\
+ \hline 
+
+
+
+%----------------------------------------------------------------------------------%
+\rowcolor{lightgray}\multicolumn{4}{|l|}{Inspiration} \\
+ \hline 
+
+% Data Programming
+~\cite{2016_dataprogramming} & \emph{(2016) Data Programming: Creating Large Training Sets, Quickly}
+& \textbf{10/10} & original paper \\
+
+~\cite{2017_snorkel} & \emph{(2017) Snorkel: rapid training data creation with weak supervision}
+& \textbf{10/10} & subsequent system implementation\\
+ 
+~\cite{2019_RatnerThesis} & \emph{(2019) Accelerating machine learning with training data management}
+& \textbf{10/10} & PhD Thesis with detailed explanation\\
+ \hline 
+ 
+
+% Weak supervision for subevent extraction
+~\cite{2020_weaksupervision_subevent} & \emph{(2020) Weakly Supervised Subevent Knowledge Acquisition}
+& \textbf{10/10} & interesting framework\\
+ \hline 
+
+
+%----------------------------------------------------------------------------------%
+\rowcolor{lightgray}\multicolumn{4}{|l|}{Deep Reinforcement Learning for Trading} \\
+ \hline 
+
+% #Deep Reinforcement Learning #Trading
+~\cite{Fischer2018RL} & \emph{(2018) Reinforcement learning in financial markets - a survey}
+& \textbf{10/10} & survey\\
+ \hline 
+
+~\cite{Jiang2021surveyDRL} & \emph{(2021) Applications of deep learning in stock market prediction: Recent progress}
+& \textbf{10/10} & survey, very comprehensive and relevant; good coverage and comparison overview\\
+ \hline 
+
+~\cite{liu2020finrl} & \emph{(2020) FinRL: A Deep Reinforcement Learning Library for Automated Stock Trading in Quantitative Finance}
+& \textbf{10/10} & useful resources / libraries for implementing RL trading workflow\\
+ \hline 
+
+~\cite{yang2020} & \emph{(2020) Deep Reinforcement Learning for Automated Stock Trading: An Ensemble Strategy}
+& \textbf{9/10} & good references, very relevant, only price information\\
+ \hline 
+
+~\cite{Mosavi2020} & \emph{(2020) Comprehensive Review of Deep Reinforcement Learning Methods and Applications in Economics}
+& \textbf{2/10} & badly written, seems like study notes rather than published paper, some good collection of fundamental concepts\\
+ \hline 
+
+\end{longtable}
+\end{landscape}
+
+%----------------------------------------------------------------------------------%
+%----------------------------------------------------------------------------------%
+
+
+
+
+
+\bibliographystyle{plain}
+
+\bibliography{bibliography}
+
+\end{document}
