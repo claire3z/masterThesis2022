@@ -530,3 +530,335 @@ df_combined.groupby('GICS Sector').count()['name']
 samples1 = df_combined[df_combined['GICS Sub-Industry'].isin(['Application Software','Semiconductors','Data Processing & Outsourced Services'])]
 
 samples2 = df_combined[df_combined['GICS Sub-Industry']!='Information Technology'].sample(10)
+
+
+### 2021.11.17
+#TODO: Transfer sample files from D:/ to C:/ [Done]
+#TODO: Create proprocessing.ipynb [Done]
+#TODO: Further test and modify patterns [Done]
+#TODO: Data structure for folder-file-positions-interactive?
+
+file_name = "YUM/10-K/0001041061-01-500003/filing-details.html" ### <-- this is just a PDF
+# file_name = "GOOG/10-Q/0001652044-21-000057/filing-details.html" ### <-- this is
+# file_name = "GOOG/10-K/0001652044-16-000012/filing-details.html"
+
+file_html = path + file_name
+pattern_start = re.compile(
+    r"Item\s?\d?.?\s*Management[’|']s Discussion and Analysis of Financial Condition and Results of Operations",
+    flags=re.IGNORECASE)  # Management's Discussion and Analysis of")
+pattern_end = re.compile(r"Item\s?\d[A-Z]?.?\s*?Quantitative and Qualitative Disclosures about Market",
+                         flags=re.IGNORECASE)
+
+with open(file_html) as f:
+    soup_html = BeautifulSoup(f, 'html.parser')
+
+soup_text = soup_html.get_text(strip=True)
+soup_text = soup_text.replace('\n', ' ').replace('\xa0', ' ')
+
+print(soup_html.title)
+print('Raw len = {}, vs clean len = {} / {}'.format(len(soup_html.text), len(soup_html.get_text(strip=True)),
+                                                    len(soup_text)))
+
+print("Starting matches:")
+starts = re.finditer(pattern_start, soup_text)
+for i in starts:
+    print(i)
+
+print("\nEnding matches:")
+ends = re.finditer(pattern_end, soup_text)
+for i in ends:
+    print(i)
+
+starts = [*re.finditer(pattern_start, soup_text)]
+if len(starts) > 1:
+    start = starts[1].start()
+elif len(starts) == 1:
+    start = starts[0].start()
+else:
+    pattern_start = re.compile(
+        r"Management[’|']s Discussion and Analysis of Financial Condition and Results of Operations",
+        flags=re.IGNORECASE)  # Management's Discussion and Analysis of")
+
+    print("Starting matches:")
+    starts = re.finditer(pattern_start, soup_text)
+    for i in starts:
+        print(i)
+
+    starts = [*re.finditer(pattern_start, soup_text)]
+    if len(starts) == 1:
+        start = starts[0].start()
+
+ends = [*re.finditer(pattern_end, soup_text)]
+if len(ends) > 1:
+    end = ends[1].start()
+elif len(ends) == 1:
+    end = ends[0].start()
+else:
+    pattern_end = re.compile(r"Quantitative and Qualitative Disclosures about Market", flags=re.IGNORECASE)
+
+    print("\nEnding matches:")
+    ends = re.finditer(pattern_end, soup_text)
+    for i in ends:
+        print(i)
+
+    ends = [*re.finditer(pattern_end, soup_text)]
+    if len(ends) == 1:
+        end = ends[0].start()
+
+print(
+    '\n\nStarting position = {}\n {} \n...\n {}\nEnding posisition ={}\n\n{}'.format(start, soup_text[start:end][:500],
+                                                                                     soup_text[start:end][-500:], end,
+                                                                                     soup_text[end:end + 100]))
+
+# Testing for financial extraction
+## NOTES:
+# Inline XBRL
+# On June 28, 2018, the Commission adopted amendments requiring the use, on a phased in basis, of Inline XBRL for operating company financial statement information and fund risk/return summary information.
+
+# When must filers begin filing using Inline XBRL?
+# There is a three-year phase-in for U.S. GAAP filers to comply the Inline XBRL requirements, beginning with fiscal periods ending on or after:
+# June 15, 2019 for large accelerated filers
+# June 15, 2020 for accelerated filers
+# June 15, 2021 for all other filers
+# For IFRS filers, compliance is required beginning with fiscal periods ending on or after June 15, 2021.
+
+
+### 2021.11.18
+# mainly working on .ipynb to finalize the patterns
+
+# Verbose version
+def identify_MDA(file_name):
+    file_html = path + file_name
+    with open(file_html) as f:
+        soup_html = BeautifulSoup(f, 'html.parser')
+
+    soup_text = soup_html.get_text(strip=True)
+    soup_text = soup_text.replace('\xa0', '').replace('\n', '')
+
+    pattern_toc = re.compile(r"(table of contents)|(index)", flags=re.IGNORECASE)
+    toc = re.search(pattern_toc, soup_text)
+    ix = len(soup_html.find_all('ix:header'))
+
+    pattern_start = re.compile(
+        r"(?<![\"|“|'])Item\s?\d?.?\s*Management[’|']s[\s]*Discussion[\s]*and[\s]*Analysis[\s]*of[\s]*Financial[\s]*Condition[\s]*and[\s]*Results[\s]*of[\s]*Operations",
+        flags=re.IGNORECASE)  # Management's Discussion and Analysis of")
+    starts = [*re.finditer(pattern_start, soup_text)]
+    if len(starts) == 0:
+        pattern_start = re.compile(
+            r"(?<![\"|“|'])Management[’|']s[\s]*Discussion[\s]*and[\s]*Analysis[\s]*of[\s]*Financial[\s]*Condition[\s]*and Results[\s]*of[\s]*Operations",
+            flags=re.IGNORECASE)  # Management's Discussion and Analysis of")
+        starts = [*re.finditer(pattern_start, soup_text)]
+
+    if len(starts) == 1:
+        start = starts[0].start()
+
+    elif len(starts) > 1:
+        if toc:
+            start = starts[1].start()
+        else:
+            start = 0
+            print('\n>>>>>>NO TOC and MORE THAN 1 START POSITIONS!!!<<<<<<\n')
+            pass  # TODO
+    else:
+        start = 0
+        print('\n>>>>>>COULD NOT FIND ANY START POSITION!!!<<<<<<\n')
+        pass  # TODO
+
+    pattern_end = re.compile(
+        r"(?<![\"|“|'])Item\s?\d[A-Z]?.?\s*Quantitative[\s]*and[\s]*Qualitative[\s]*Disclosure[s]?[\s]*about[\s]*Market",
+        flags=re.IGNORECASE)
+    ends = [*re.finditer(pattern_end, soup_text)]
+    if len(ends) == 0:
+        pattern_end = re.compile(
+            r"(?<![\"|“|'])Quantitative[\s]*and[\s]*Qualitative[\s]*Disclosure[s]?[\s]*about[\s]*Market",
+            flags=re.IGNORECASE)
+        ends = [*re.finditer(pattern_end, soup_text)]
+
+    if len(ends) == 1:
+        end = ends[0].start()
+
+    elif len(ends) > 1:
+        if toc:
+            end = ends[1].start()
+        else:
+            for i in len(ends):
+                if ends[i].start() > start + 10000:
+                    end = ends[i].start()
+                    break
+            print('\n>>>>>>NO TOC and MORE THAN 1 END POSITIONS!!!<<<<<<\n')
+            pass  # TODO
+
+    else:
+        end = min(start + 50000, len(soup_text))
+        print('\n>>>>>>COULD NOT FIND ANY END POSITION!!!<<<<<<\n')
+        pass  # TODO
+
+        # if end position is not found (some companies did not have Quantitiative and Qualitative section in earlier reports)
+        # then end = start + 10000
+
+    print(soup_html.title.text, 'IX=', ix, 'size=', len(soup_text), 'toc=', toc, '\n')
+
+    print("Starting matches:")
+    for i in starts:
+        print(i, '\n...', soup_text[i.start() - 100:i.start() + 100])
+
+    print("\nEnding matches:")
+    for i in ends:
+        print(i, '\n...', soup_text[i.start() - 100:i.start() + 100])
+
+    print(
+        '\n\n{}\n----------------------->>> Starting position = {} <<<---------------------\n {} \n...\n {}\n----------------------->>> Ending posisition = {} <<<---------------------\n{}'.format(
+            soup_text[start - 100:start], start, soup_text[start:start + 500], soup_text[end - 500:end], end,
+            soup_text[end:end + 100]))
+    if end < start:
+        print("END > START !!!")
+    print('\n============================================================================\n\n\n')
+
+    return start, end
+
+
+file_names = ["YUM/10-K/0001041061-01-500003/filing-details.html",
+              "YUM/10-Q/0001564590-16-029416/filing-details.html",
+              "YUM/10-K/0001564590-21-009460/filing-details.html",
+
+              "GOOG/10-Q/0001652044-21-000057/filing-details.html",
+              "GOOG/10-K/0001652044-19-000004/filing-details.html",
+              "GOOG/10-K/0001652044-21-000010/filing-details.html",
+
+              "MRK/10-Q/0000310158-00-500003/filing-details.html",
+              "MRK/10-K/0000310158-18-000005/filing-details.html",
+              "MRK/10-K/0000310158-21-000004/filing-details.html",
+
+              'D/10-Q/0000215466-12-000006/filing-details.html',
+              'D/10-Q/0001564590-21-054856/filing-details.html',
+              'D/10-K/0000882184-17-000103/filing-details.html'
+              ]
+record = {}
+for file_name in file_names:
+    record[file_name] = identify_MDA(file_name)
+
+
+# Clean version
+
+def identify_MDA_save(file_name):
+    with open(file_name) as f:
+        soup_html = BeautifulSoup(f, 'html.parser')
+
+    soup_text = soup_html.get_text(strip=True)
+    soup_text = soup_text.replace('\xa0', '').replace('\n', '')
+
+    pattern_toc = re.compile(r"(table of contents)|(index)", flags=re.IGNORECASE)
+    toc = re.search(pattern_toc, soup_text)
+    ix = len(soup_html.find_all('ix:header'))
+
+    pattern_start = re.compile(
+        r"(?<![\"|“|'])Item\s?\d?.?\s*Management[’|']s[\s]*Discussion[\s]*and[\s]*Analysis[\s]*of[\s]*Financial[\s]*Condition[\s]*and[\s]*Results[\s]*of[\s]*Operations",
+        flags=re.IGNORECASE)  # Management's Discussion and Analysis of")
+    starts = [*re.finditer(pattern_start, soup_text)]
+    if len(starts) == 0:
+        pattern_start = re.compile(
+            r"(?<![\"|“|'])Management[’|']s[\s]*Discussion[\s]*and[\s]*Analysis[\s]*of[\s]*Financial[\s]*Condition[\s]*and Results[\s]*of[\s]*Operations",
+            flags=re.IGNORECASE)  # Management's Discussion and Analysis of")
+        starts = [*re.finditer(pattern_start, soup_text)]
+
+    if len(starts) == 1:
+        start = starts[0].start()
+
+    elif len(starts) > 1:
+        if toc:
+            start = starts[1].start()
+        else:
+            start = 0
+    #            print('\n>>>>>>NO TOC and MORE THAN 1 START POSITIONS!!!<<<<<<\n')
+    #            pass #TODO
+    else:
+        start = 0
+    #        print('\n>>>>>>COULD NOT FIND ANY START POSITION!!!<<<<<<\n')
+    #        pass #TODO
+
+    pattern_end = re.compile(
+        r"(?<![\"|“|'])Item\s?\d[A-Z]?.?\s*Quantitative[\s]*and[\s]*Qualitative[\s]*Disclosure[s]?[\s]*about[\s]*Market",
+        flags=re.IGNORECASE)
+    ends = [*re.finditer(pattern_end, soup_text)]
+    if len(ends) == 0:
+        pattern_end = re.compile(
+            r"(?<![\"|“|'])Quantitative[\s]*and[\s]*Qualitative[\s]*Disclosure[s]?[\s]*about[\s]*Market",
+            flags=re.IGNORECASE)
+        ends = [*re.finditer(pattern_end, soup_text)]
+
+    if len(ends) == 1:
+        end = ends[0].start()
+
+    elif len(ends) > 1:
+        if toc:
+            end = ends[1].start()
+        else:
+            for i in len(ends):
+                if ends[i].start() > start + 10000:
+                    end = ends[i].start()
+                    break
+    #            print('\n>>>>>>NO TOC and MORE THAN 1 END POSITIONS!!!<<<<<<\n')
+    #            pass #TODO
+
+    else:
+        end = min(start + 50000, len(soup_text))
+
+    return ix, start, end
+
+
+# Add Google old files (before name change) to the sample 2
+
+sample2 = pd.read_csv(path[:-8]+'statistics_samples2.csv')
+
+ticker = 'GOOG_1288776'
+K = os.listdir(path+ticker+"/10-K/")
+Q = os.listdir(path+ticker+"/10-Q/")
+add_google = pd.DataFrame({'ticker':[ticker], '10K_files':[K], '10Q_files':[Q], 'k_count':[len(K)], 'q_count':[len(Q)]})
+
+sample2 = sample2.append(add_google)
+sample2.set_index('ticker', inplace=True)
+
+# Delete AVGO since it has been added to the IT sample
+sample2.drop('AVGO',axis='index',inplace=True)
+
+sample2.index
+
+# Start Preprocessing
+
+from ast import literal_eval
+
+# pandas store list as string; need to convert back
+
+temp = []
+for ticker in sample2.index:
+    d = {}
+    d['ticker'] = ticker
+    for doc in literal_eval(sample2.loc[ticker, '10K_files']):
+        if len(doc) != 0:
+            d['type'] = '10K'
+            d['file'] = doc
+            folder = path + ticker + "/10-K/" + doc + "/"
+            file = os.listdir(folder)[0]
+            file_name = folder + "/" + file
+            d['ix'], d['start'], d['end'] = identify_MDA_save(file_name)
+            temp.append(d)
+    print(d)
+    for doc in literal_eval(sample2.loc[ticker, '10Q_files']):
+        d['type'] = '10Q'
+        d['file'] = doc
+        #        file_name = path+ticker+"/10-Q/"+doc+'/filing-details.html'
+        folder = path + ticker + "/10-Q/" + doc + "/"
+        file = os.listdir(folder)[0]
+        file_name = folder + "/" + file
+        d['ix'], d['start'], d['end'] = identify_MDA_save(file_name)
+        temp.append(d)
+    print(d)
+
+df = pd.DataFrame(temp)
+
+df.to_pickle(path[:-8] + '/sample2_scan.pkl')
+
+
+# Statistics Overview
+df2 = pd.read_pickle(path[:-8]+'/sample2_scan.pkl')
+df2.head()
