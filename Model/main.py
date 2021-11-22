@@ -3,7 +3,10 @@ import pandas as pd
 import time
 from bs4 import BeautifulSoup
 import re
+import os
 import random
+from ast import literal_eval # pandas store list as string; need to convert back
+
 
 pd.set_option('max_colwidth',None)
 pd.options.display.width = 0
@@ -793,7 +796,7 @@ def identify_MDA_save(file_name):
         if toc:
             end = ends[1].start()
         else:
-            for i in len(ends):
+            for i in range(len(ends)): ### CORRECTION HERE!
                 if ends[i].start() > start + 10000:
                     end = ends[i].start()
                     break
@@ -862,3 +865,67 @@ df.to_pickle(path[:-8] + '/sample2_scan.pkl')
 # Statistics Overview
 df2 = pd.read_pickle(path[:-8]+'/sample2_scan.pkl')
 df2.head()
+
+
+
+
+
+### 2021.11.22 Processing the rest of the tech samples
+
+data_root = "C:/Users/clair/Desktop/Thesis/masterThesis2022/Data/"
+path = data_root+'Samples/Information Technology/'
+sample = pd.read_csv(data_root+'statistics_samples1.csv')
+
+# Add additional tickers
+add_tickers = ['AVGO_Avago Technologies_0001441634','AVGO_Broadcom Corp_0001054374','AVGO_Broadcom Merged_0001649338','NXPI_0001193125']
+# Need to change the folder name in NXP from 20-F to 10-K and add an empty folder '10-Q'
+for ticker in add_tickers:
+    K = os.listdir(path+ticker+"/10-K/")
+    Q = os.listdir(path+ticker+"/10-Q/")
+    add_sample = pd.DataFrame({'ticker':[ticker], '10K_files':str(K), '10Q_files':str(Q), 'k_count':[len(K)], 'q_count':[len(Q)]})
+    sample = sample.append(add_sample)
+
+sample.set_index('ticker', inplace=True)
+print(sample.index)
+
+type(sample['10K_files'][0])
+type(sample['10K_files'][-1])
+
+
+# Start Preprocessing
+temp = []
+for ticker in sample.index:
+    for doc in literal_eval(sample.loc[ticker, '10K_files']): # pandas store list as string; need to convert back
+        if len(doc) != 0:
+            d = {}
+            d['ticker'] = ticker
+            d['type'] = '10K'
+            d['file'] = doc
+            folder = path + ticker + "/10-K/" + doc + "/"
+            file = os.listdir(folder)[0]
+            file_name = folder + "/" + file
+            d['ix'], d['start'], d['end'] = identify_MDA_save(file_name)
+            temp.append(d)
+    print(d)
+    for doc in literal_eval(sample.loc[ticker, '10Q_files']):
+        if len(doc) != 0:
+            d = {}
+            d['ticker'] = ticker
+            d['type'] = '10Q'
+            d['file'] = doc
+            # file_name = path+ticker+"/10-Q/"+doc+'/filing-details.html' # sometimes only available in .txt
+            folder = path + ticker + "/10-Q/" + doc + "/"
+            file = os.listdir(folder)[0]
+            file_name = folder + "/" + file
+            d['ix'], d['start'], d['end'] = identify_MDA_save(file_name)
+            temp.append(d)
+    print(d)
+
+df = pd.DataFrame(temp)
+df.to_pickle(data_root + '/sample1_scan.pkl')
+df.to_csv(data_root+'/sample1_scan.csv')
+
+# Statistics Overview
+df1 = pd.read_pickle(data_root +'/sample1_scan.pkl')
+df1.head()
+
