@@ -1481,4 +1481,1960 @@ print(x(None))
 l=[]
 l.append(x(1))
 l.append(x(None))
-l
+
+
+
+# 2021.12.17
+import pandas as pd
+from bs4 import BeautifulSoup
+import re
+import time
+import os
+from ast import literal_eval # pandas store list as string; need to convert back
+from collections import Counter
+import spacy
+nlp = spacy.load("en_core_web_sm")
+
+# !pip install wordcloud
+from wordcloud import WordCloud
+import seaborn as sns
+import matplotlib.pyplot as plt
+
+pd.set_option('max_colwidth',None)
+pd.set_option('display.max_rows', None)
+pd.set_option('display.width', 0)
+
+# generalization of causes and effects
+
+sentences = ['COVID-19-related disruptions, including patients’ inability to access health care providers, prioritization of COVID-19 patients, as well as social distancing measures have negatively affected our results.',
+             'The decline during the first six months of 2021 primarily reflects decreases across markets due to ongoing generic competition for products within the established brands business, particularly for cardiovascular products Zetia and Vytorin (ezetimibe and simvastatin), lower sales of respiratory products Singulair (montelukast), Dulera and Nasonex, and generic competition for women’s health product.',
+             'Revenues for the second quarter of 2021 and the first six months of 2021 primarily reflect our share of the profits.',
+             'Sales growth in the second quarter and first six months of 2021 was driven primarily by continued demand growth in the United States since launch in 2017, partially offset by higher discount rates.',
+             'For the second quarter and first six months of 2021, sales reflect uptake since the July 2020 launch in the United States, partially offset by a decrease in the EU reflecting increasing competitive pressures and price erosion.',
+             'The sales decrease in the first six months of 2021 reflects lower demand in the United States, lower demand due to generic competition in Japan and the Asia Pacific region, the effect of the shift in product mix and lower demand in China, and lower sales in Canada as sales in the second quarter of 2020 was higher due to competitor supply shortages.',
+             'Sales for the first six months of 2021  -37- also reflect lower demand in Europe and Canada in the beginning of 2021 due to the COVID-19 pandemic. ',
+             'The gross margin declines reflect an increase in stand up costs, as well as certain costs related to tolling arrangements with Merck, which have lower gross margin percentages compared to product sales.',
+             'The decrease in net income for both periods reflects an increase in costs and expenses incurred to establish Organon as a standalone entity, partially offset by higher sales due to higher demand for certain of our products across several markets in the second quarter of 2021.',
+             ]
+
+
+def break_down(sentence):
+    """breaking a sentence down into components
+    input: string
+    output: a dict consisting of (voice, root, advmod, subject, object, prep)
+    """
+    sent = nlp(sentence)
+
+    if sent[:].root.pos_ != 'VERB':
+        return
+    else:
+        root = sent[:].root
+
+    d = {}
+    d['advmod'] = []
+    #    d['prep'] = []
+    d['root'] = root
+
+    for child in root.children:
+
+        # active voice
+        if child.dep_ == 'nsubj':
+            d['voice'] = 'active'
+            d['left'] = sent[:child.right_edge.i + 1]
+        if child.dep_ == 'dobj':
+            d['right'] = sent[child.left_edge.i:]
+
+        # passive voice
+        if child.dep_ == 'nsubjpass':
+            d['voice'] = 'passive'
+            d['left'] = sent[:child.right_edge.i + 1]
+        if child.dep_ == 'agent':
+            d['right'] = sent[child.left_edge.i + 1:]
+
+        # other modifiers
+        if child.dep_ == 'advmod':
+            d['advmod'].append(sent[child.left_edge.i:child.right_edge.i + 1])
+        if child.dep_ == 'neg' and child.i == root.i - 1:
+            d['advmod'].append(sent[child.left_edge.i:child.right_edge.i + 1])
+
+    if 'left' not in d.keys():
+        d['left'] = sent[:root.i]
+    if 'right' not in d.keys():
+        d['right'] = sent[root.i + 1:]
+
+    return d
+
+
+CvE = ['drive', 'affect', 'impact', 'cause']
+EvC = ['reflect']
+
+
+def get_cause(d, CvE, EvC):
+    if d['root'].lemma_ in EvC:
+        if d['voice'] == 'active':
+            return d['right']
+        else:
+            return d['left']
+    if d['root'].lemma_ in CvE:
+        if d['voice'] == 'active':
+            return d['left']
+        else:
+            return d['right']
+
+
+def get_effect(d, CvE, EvC):
+    if d['root'].lemma_ in CvE:
+        if d['voice'] == 'active':
+            return d['right']
+        else:
+            return d['left']
+    if d['root'].lemma_ in EvC:
+        if d['voice'] == 'active':
+            return d['left']
+        else:
+            return d['right']
+
+topics = ['revenue','revenues', 'sales','cost','costs','margin','profit','net income','our results','our business','growth','decline']
+from spacy.matcher import PhraseMatcher
+
+def match(sentence, topics):
+    if type(sentence) is spacy.tokens.doc.Doc:
+        doc = sentence
+    else:
+        doc = nlp(sentence)
+    patterns = [nlp(text) for text in topics]
+    phrase_matcher = PhraseMatcher(nlp.vocab,attr="LOWER")
+    phrase_matcher.add('topics', None, *patterns)
+    matched_phrases = phrase_matcher(doc)
+    if (len(matched_phrases)>0):
+        return True
+
+
+
+for sentence in sentences:
+    print(' ...... ', sentence, '\n')
+    d = break_down(sentence)
+    if d:
+        e = get_effect(d, CvE, EvC)
+        if match(e.as_doc(), topics):
+            c = get_cause(d, CvE, EvC)
+            print('>>> VOICE={} ROOT={} advmod={}\n\tCAUSE={}\n\tEFFECT={}\n\n\n'.format(d['voice'], d['root'], d['advmod'], c, e))
+
+i = -1
+doc = nlp(sentences[i])
+print(sentences[i])
+for chunk in doc.noun_chunks:
+    print(chunk.text, '->',chunk.root.text, '->',chunk.root.dep_,'->',
+            chunk.root.head.text)
+
+print(doc[:].root, '>>>')
+for child in doc[:].root.children:
+    print(child, child.pos_, child.dep_) #token.text, token.lemma_, token.pos_, token.tag_, token.dep_, token.shape_, token.is_alpha, token.is_stop)
+
+d={}
+p={}
+for token in doc:
+    if token.dep_ not in d.keys():
+        d[token.dep_] = 1
+    else:
+        d[token.dep_] += 1
+
+    if token.pos_ not in p.keys():
+        p[token.pos_] = [token]
+    else:
+        p[token.pos_].append(token)
+
+    print(token.text,'\t\t', token.pos_, '\t\t',token.dep_) #, token.lemma_, token.tag_, token.shape_, token.is_alpha, token.is_stop)
+
+d
+p
+
+# seed -> pattern -> repeat
+data_root = "C:/Users/clair/Desktop/Thesis/masterThesis2022/Data/"
+df = pd.read_pickle(data_root+'/sample2_mda_wordcount.pkl')
+
+def get_MDA(row):
+    global data_root
+
+    ticker = str(row['ticker'])
+    type_ = str(row['type'])
+    file = str(row['file'])
+
+    folder = data_root + 'Samples/' + ticker + "/" + type_ + "/" + file + "/"
+    file_name = folder + "/raw_mda.txt"
+
+    try:
+        with open(file_name) as f:
+            text = f.read()
+    except OSError:
+        text = ''
+
+    return text
+
+
+def get_sentences(text):
+    doc = nlp(text)
+    sentences = [s for s in doc.sents]
+
+    return sentences
+
+
+def filter_verbs(sentence, verbs):
+    if sentence.root.lemma_ in verbs:
+        return sentence
+
+
+def filter_phrases(sentence, phrases):
+    s = sentence.text
+    for p in phrases:
+        if p in s:
+            return sentence
+
+
+def extract_sentences(row, verbs, phrases):
+    # process raw MDA text
+    text = get_MDA(row)  # raw text
+    sentences = get_sentences(text)  # SpaCy doc
+
+    # identify sentences with target verbs and phrases
+    sentences_verbs = []
+    sentences_phrases = []
+    sentences_length = []
+
+    for sentence in sentences:
+        sentences_length.append(len(sentence))  # inclusive of all punctuations and special characters $,%,...
+
+        v = filter_verbs(sentence, verbs)
+        if v:
+            # sentences_verbs.append(v) #SpaCy span
+            sentences_verbs.append(v.text)  # str
+
+        p = filter_phrases(sentence, phrases)
+        if p:
+            # sentences_phrases.append(p) #SpaCy span
+            sentences_phrases.append(p.text)
+
+    return sentences_length, sentences_verbs, sentences_phrases
+
+
+causal_verbs = ['drive','reflect','affect','impact','cause']
+causal_phrases = ['due to', 'driven by']
+
+df['temp'] = df.apply(lambda row: extract_sentences(row, causal_verbs, causal_phrases),axis=1)
+
+df['sent_len'] = df['temp'].apply(lambda x: x[0])
+df['causal_verbs'] = df['temp'].apply(lambda x: x[1])
+df['causal_phrases'] = df['temp'].apply(lambda x: x[2])
+df.drop(columns='temp',inplace=True)
+
+
+def extract_subj_verb_obj(sentence,deps = ['nsubj','nsubjpass','obj','dobj','iobj']):
+    verb = sentence.root.lemma_
+    for child in sentence.root.children:
+        if child.dep_ in deps:
+            if child.dep_ == 'nsubj':
+                voice = 'active'
+            if child.dep_ == 'nsubjpass':
+                voice = 'passive'
+
+            if child.i < sentence.root.i:
+                left = child
+            else:
+                right = child
+
+    return verb, voice, left, right
+
+
+
+df_sent = pd.DataFrame()
+df_sent.columns = ['id','position','sentence','verb','subj','obj']
+
+def transfer_sentences(df_sent,df_doc):
+
+    for index, row in df_doc.iterrows():
+
+        ticker = str(row['ticker'])
+        type_ = str(row['type'])
+        file = str(row['file'])
+        id = (ticker,type_,file) #unique id for each document
+
+        text = get_MDA(row)  # raw text
+        sentences = get_sentences(text)  # SpaCy doc
+
+        df_ = pd.DataFrame()
+        df_['position'] = [i for i in range(len(sentences))]
+        df_['sentence'] = sentences
+        df_['temp'] = df_['sentence'].apply(lambda sentence : extract_subj_verb_obj(sentence), axis=1)
+        df_['verb'] = df_['temp'].apply(lambda x:x[0])
+        df_['voice'] = df_['temp'].apply(lambda x:x[1])
+        df_['left'] = df_['temp'].apply(lambda x:x[2])
+        df_['right'] = df_['temp'].apply(lambda x:x[3])
+        df_['id'] = id
+        df_.drop(columns='temp', inplace=True)
+        df_sent = df_sent.append(df_, ignore_index=True)
+
+
+# 2021.12.20 Matcher
+import spacy
+from spacy.matcher import Matcher
+
+nlp = spacy.load("en_core_web_sm")
+matcher = Matcher(nlp.vocab)
+
+# Add match ID "HelloWorld" with no callback and one pattern
+pattern = [{"LOWER": "hello"},{"LOWER": "world"}]
+matcher.add("HelloWorld", [pattern])
+
+doc = nlp("Hello, world! Hello world!")
+matches = matcher(doc)
+for match_id, start, end in matches:
+    string_id = nlp.vocab.strings[match_id]  # Get string representation
+    span = doc[start:end]  # The matched span
+    print(match_id, string_id, start, end, span.text)
+
+# Match different spellings of token texts
+pattern = [{"TEXT": {"REGEX": "deff?in[ia]tely"}}]
+
+# Match tokens with fine-grained POS tags starting with 'V'
+pattern = [{"TAG": {"REGEX": "^V"}}]
+
+# Match custom attribute values with regular expressions
+pattern = [{"_": {"country": {"REGEX": "^[Uu](nited|\.?) ?[Ss](tates|\.?)$"}}}]
+
+
+from spacy.tokens import Span
+
+nlp = spacy.blank("en")
+matcher = Matcher(nlp.vocab)
+matcher.add("PERSON", [[{"lower": "barack"}, {"lower": "obama"}]])
+doc = nlp("Barack Obama was the 44th president of the United States")
+
+# 1. Return (match_id, start, end) tuples
+matches = matcher(doc)
+for match_id, start, end in matches:
+    # Create the matched span and assign the match_id as a label
+    span = Span(doc, start, end, label=match_id)
+    print(span.text, span.label_)
+
+# 2. Return Span objects directly
+matches = matcher(doc, as_spans=True)
+for span in matches:
+    print(span.text, span.label_)
+
+
+
+from spacy import displacy
+from spacy.matcher import Matcher
+
+nlp = spacy.load("en_core_web_sm")
+matcher = Matcher(nlp.vocab)
+matched_sents = []  # Collect data of matched sentences to be visualized
+
+def collect_sents(matcher, doc, i, matches):
+    match_id, start, end = matches[i]
+    span = doc[start:end]  # Matched span
+    sent = span.sent  # Sentence containing matched span
+    # Append mock entity for match in displaCy style to matched_sents
+    # get the match span by ofsetting the start and end of the span with the
+    # start and end of the sentence in the doc
+    match_ents = [{
+        "start": span.start_char - sent.start_char,
+        "end": span.end_char - sent.start_char,
+        "label": "MATCH",
+    }]
+    matched_sents.append({"text": sent.text, "ents": match_ents})
+
+pattern = [{"LOWER": "facebook"}, {"LEMMA": "be"}, {"POS": "ADV", "OP": "*"},
+           {"POS": "ADJ"}]
+matcher.add("FacebookIs", [pattern], on_match=collect_sents)  # add pattern
+doc = nlp("I'd say that Facebook is evil. – Facebook is pretty cool, right?")
+matches = matcher(doc)
+
+# Serve visualization of sentences containing match with displaCy
+# set manual=True to make displaCy render straight from a dictionary
+# (if you're not running the code within a Jupyer environment, you can
+# use displacy.serve instead)
+#displacy.render(matched_sents, style="ent", manual=True)
+displacy.serve(matched_sents, style="ent", manual=True)
+
+
+# Phrase Matcher
+from spacy.matcher import PhraseMatcher
+nlp = spacy.load("en_core_web_sm")
+matcher = PhraseMatcher(nlp.vocab)
+terms = ["Barack Obama", "Angela Merkel"]#, "Washington, D.C."]
+
+# Only run nlp.make_doc to speed things up
+patterns = [nlp.make_doc(text) for text in terms]
+matcher.add("TerminologyList", patterns)
+
+doc = nlp("German Chancellor and US President Barack Obama "
+          "converse in the Oval Office inside the White House in Washington, D.C.")
+matches = matcher(doc)
+for match_id, start, end in matches:
+    span = doc[start:end]
+    print(span.text)
+
+
+# Dependency Matcher
+from spacy.matcher import DependencyMatcher
+
+# "[subject] ... initially founded"
+pattern = [
+  # anchor token: founded
+  {
+    "RIGHT_ID": "founded",
+    "RIGHT_ATTRS": {"ORTH": "founded"}
+  },
+  # founded -> subject
+  {
+    "LEFT_ID": "founded",
+    "REL_OP": ">",
+    "RIGHT_ID": "subject",
+    "RIGHT_ATTRS": {"DEP": "nsubj"}
+  },
+  # "founded" follows "initially"
+  {
+    "LEFT_ID": "founded",
+    "REL_OP": ";",
+    "RIGHT_ID": "initially",
+    "RIGHT_ATTRS": {"ORTH": "initially"}
+  }
+]
+
+matcher = DependencyMatcher(nlp.vocab)
+matcher.add("FOUNDED", [pattern])
+matches = matcher(doc)
+
+
+from spacy.matcher import DependencyMatcher
+nlp = spacy.load("en_core_web_sm")
+matcher = DependencyMatcher(nlp.vocab)
+
+pattern = [
+    {
+        "RIGHT_ID": "anchor_founded",
+        "RIGHT_ATTRS": {"ORTH": "founded"}
+    },
+    {
+        "LEFT_ID": "anchor_founded",
+        "REL_OP": ">",
+        "RIGHT_ID": "founded_subject",
+        "RIGHT_ATTRS": {"DEP": "nsubj"},
+    },
+    {
+        "LEFT_ID": "anchor_founded",
+        "REL_OP": ">",
+        "RIGHT_ID": "founded_object",
+        "RIGHT_ATTRS": {"DEP": "dobj"},
+    },
+    {
+        "LEFT_ID": "founded_object",
+        "REL_OP": ">",
+        "RIGHT_ID": "founded_object_modifier",
+        "RIGHT_ATTRS": {"DEP": {"IN": ["amod", "compound"]}},
+    }
+]
+
+matcher.add("FOUNDED", [pattern])
+doc = nlp("Lee, an experienced CEO, has founded two AI startups.")
+matches = matcher(doc)
+
+print(matches) # [(4851363122962674176, [6, 0, 10, 9])]
+# Each token_id corresponds to one pattern dict
+match_id, token_ids = matches[0]
+for i in range(len(token_ids)):
+    print(pattern[i]["RIGHT_ID"] + ":", doc[token_ids[i]].text)
+
+
+# Good Reference: http://markneumann.xyz/blog/dependency_matcher/
+### express the structural relation through the spec, and the dependency label through the PATTERN field,
+
+
+# https://www.youtube.com/watch?v=gUbMI52bIMY
+from spacy.matcher import DependencyMatcher
+nlp = spacy.load("en_core_web_sm")
+
+dep_matcher = DependencyMatcher(nlp.vocab)
+
+
+#causal_verbs = ['drive','reflect','affect','impact','cause']
+CvE = ['drive','affect','impact','cause','result']
+EvC = ['reflect']
+
+# anchor node
+causal_verbs = {'RIGHT_ID':'verb', 'RIGHT_ATTRS':{'POS':'VERB', 'LEMMA':{'IN':CvE}}}
+causal_verbs1 = {'RIGHT_ID':'verb', 'RIGHT_ATTRS':{'POS':'VERB', 'LEMMA':{'IN':EvC}}}
+
+# next link in the chain: LEFT_ID (head) > RIGHT_ID
+subj_active = {'LEFT_ID':'verb', 'REL_OP':'>','RIGHT_ID':'cause1','RIGHT_ATTRS':{'DEP':'nsubj'}} # active voice
+obj_active = {'LEFT_ID':'verb', 'REL_OP':'>','RIGHT_ID':'effect1','RIGHT_ATTRS':{'DEP': {"IN": ["obj", "dobj", "iobj"]}}}
+
+subj_passive = {'LEFT_ID':'verb', 'REL_OP':'>','RIGHT_ID':'effect','RIGHT_ATTRS':{'DEP':'nsubjpass'}} # active voice
+by = {'LEFT_ID':'verb', 'REL_OP':'>','RIGHT_ID':'prep_by','RIGHT_ATTRS':{'DEP':'agent'}}
+obj_passive = {'LEFT_ID':'prep_by', 'REL_OP':'>','RIGHT_ID':'cause','RIGHT_ATTRS':{'DEP': "pobj"}}
+
+# list of nested dictionaries
+dep_pattern = [causal_verbs,subj_passive,by, obj_passive]
+dep_pattern1 = [causal_verbs1,subj_active,obj_active]
+
+dep_matcher.add('passive_verb',patterns=[dep_pattern])
+dep_matcher.add('active_verb',patterns=[dep_pattern1])
+
+dep_matches_results = dep_matcher(doc)
+
+for match in dep_matches_results:
+    pattern_name = match[0]
+    if len(match[1])==3:
+        verb, subject, object = match[1][0], match[1][1],match[1][2]
+        print(nlp.vocab[pattern_name].text, '\t', doc[subject], '...', doc[verb], '...',doc[object])
+    else:
+        verb, subject, by, object = match[1][0], match[1][1],match[1][2],match[1][3]
+        print(nlp.vocab[pattern_name].text, '\t', doc[subject], '...', doc[verb],doc[by], '...', doc[object])
+
+doc = nlp('The decline was primarily driven by lower sales of Ezetrol in Japan and Ezetrol and Inegy in the EU.')
+for token in doc:
+    print(token, token.pos_, token.dep_, token.head)
+
+
+
+
+# treat noun phrase as tokens
+nlp.add_pipe('merge_noun_chunks')
+doc = nlp(u"Autonomous cars shift insurance liability toward manufacturers")
+for token in doc:
+    print(token.text, token.lemma_, token.pos_,token.dep_,token.head)
+
+nlp.pipe_names
+
+# visualization
+from spacy import displacy
+displacy.render(nlp(text[1]),style='dep')
+
+
+pattern = []
+matcher.add("causal_verb", [pattern])
+
+text = ["The decline was primarily driven by lower sales of Ezetrol in Japan and Ezetrol and Inegy in the EU.",
+        "The sales decline was driven primarily by lower demand impacted by the COVID-19 pandemic across several markets including Europe, Canada, Russia and Latin America.",
+        "The sales decline was driven largely by the COVID-19 pandemic coupled with unfavorable discount rates in the United States in the first quarter of 2021.",
+
+        "The increase in cost of sales primarily reflects costs absorbed by the Organon entities for related party tolling arrangements with Merck which were not in place during the first quarter of 2020.",
+        "Additionally, the increase in cost of sales reflects increases in direct corporate Organon costs partially offset by decreases in divisional costs across markets driven by lower sales and lower allocated costs.",
+        "The sales decline largely reflects impact of VBP in China and lower demand in Europe, Japan and Canada attributable in part to the COVID-19 pandemic.",
+
+        "Operating expenses in the first quarter of 2021 were lower due to the COVID-19 pandemic, primarily driven by lower promotional and selling costs as discussed below.",
+        "Health Contraception Worldwide sales of Nexplanon/Implanon NXT, a single-rod subdermal contraceptive implant, declined 6% in the first quarter of 2021, primarily driven by lower demand in the United States and the U.K. attributable to the COVID-19 pandemic and Latin America attributable to tender delays that is expected to recover in the second half of 2021.",
+
+        "The decline is primarily due to ongoing generic competition for products within the established brands business, particularly for respiratory products Singulair, Dulera and Nasonex, and cardiovascular products Zetia and Vytorin, as well as generic competition for women’s health product NuvaRing.",
+
+        "Worldwide sales of NuvaRing, a vaginal contraceptive product, declined 28% in the first quarter of 2021 due to generic competition in most markets, particularly in the EU and the United States.",
+        "Worldwide sales of Orgalutran, a fertility treatment, increased 85% in the first quarter of 2021 compared to the first quarter of 2020 primarily due to increased demand and favorable discount rates in the United States.",
+        "Sales in the first quarter of 2021 decreased 42% compared to the first quarter of 2020 primarily due to shipments in Brazil in 2020 related to government orders.",
+
+        'Sales increased 20% because the average selling price increased.'
+        ]
+
+doc = nlp(str(text)[1:-1])
+
+# PhraseMather
+from spacy.matcher import PhraseMatcher
+
+causal_phrases = ['driven by', 'caused by', 'impacted by', 'affected by','attributable to', 'due to', 'because of','as a result of', 'resulting from', 'as a result of']
+matcher = PhraseMatcher(nlp.vocab, attr="LOWER")
+patterns = [nlp.make_doc(phrase) for phrase in causal_phrases]
+matcher.add("causal_phrases", patterns)
+
+for sent in text:
+    print('\n\n',sent,'\n')
+    doc = nlp(sent)
+    for match_id, start, end in matcher(doc):
+        # print("Matched based on lowercase token text:", doc[start:end])
+        print('\nBEFORE >>> ',doc[:start])
+        print(noun_chunks_and_more(doc[:start]))
+
+        # if doc[:start].root.pos_ == 'VERB':
+        #     print('...verb root...',[x for x in doc[:start].noun_chunks if x.root.dep_ == 'nsubj'],'...', doc[:start].root, '.....')
+        # else:
+        #     print(noun_chunks_and_more(doc[:start]))
+
+        print('\nAFTER >>> ', doc[end:])
+        phrases, fillers = noun_chunks_and_more(nlp(doc[end:].text)) # need to reset index otherwise span retains original position index
+        for phrase in phrases
+
+
+#### THIS ###
+def noun_chunks_and_more(doc):
+    # doc tokenized by noun_chunks
+
+    np = [*doc.noun_chunks]
+    noun_chunks_idx = [[np[0].start,np[0].end]]
+    fillers = []
+
+    for i in range(len(np)-1):
+
+        # no token in between
+        if np[i].end == np[i+1].start:
+            noun_chunks_idx[-1][-1] = np[i+1].end  # extend the end position to the next phrase
+
+        # one token in between two consecutive noun phrases, e.g. for, of, in, etc.
+
+        elif np[i].end+1 == np[i+1].start:
+            if doc[np[i].end].pos_ in ['ADP','CCONJ','PUNCT']:
+                noun_chunks_idx[-1][-1] = np[i+1].end  #extend the end position to the next phrase
+
+        # multiple tokens in between two consecutive noun phrases
+        elif doc[np[i].end: np[i+1].start].text in ["as well as", ", as well as", ", and", ", or"]:
+            noun_chunks_idx[-1][-1] = np[i+1].end
+
+        else:
+            noun_chunks_idx.append([np[i+1].start,np[i+1].end])
+            fillers.append(doc[np[i].end : np[i+1].start])
+
+    noun_chunks = [doc[i:j] for [i,j] in noun_chunks_idx]
+
+    return noun_chunks, fillers
+
+
+
+
+#s = 'the sales of healthcare products in China, the USA and the EU decreased primiarily due to weak market demand as well as unfavorable regulation changes.'
+s = 'ongoing generic competition for products within the established brands business, particularly for respiratory products ' \
+    'Singulair, Dulera and Nasonex, and cardiovascular products Zetia and Vytorin, as well as generic competition for women’s health product NuvaRing.'
+s = "lower sales of Ezetrol in Japan and Ezetrol and Inegy in the EU."
+print(noun_chunks_and_more(nlp(s)))
+
+x, y = noun_chunks_and_more(nlp(s))
+print(len(x),len(y))
+
+for p in x:
+    print(p,'......',p.root.head)
+    for np in p.noun_chunks:
+        print(np)
+
+for c in y:
+    print(c)
+
+
+
+
+### Unfortunately it is not what I wanted... just a list of noun phrases based on rank and count
+#pip install pytextrank
+
+import spacy
+import pytextrank
+
+# example text
+text = "Compatibility of systems of linear constraints over the set of natural numbers. Criteria of compatibility of a system of linear Diophantine equations, strict inequations, and nonstrict inequations are considered. Upper bounds for components of a minimal set of solutions and algorithms of construction of minimal generating sets of solutions for all types of systems are given. These criteria and the corresponding algorithms for constructing a minimal supporting set of solutions can be used in solving all the considered types systems and systems of mixed types."
+
+# load a spaCy model, depending on language, scale, etc.
+nlp = spacy.load("en_core_web_sm")
+
+# add PyTextRank to the spaCy pipeline
+nlp.add_pipe("textrank")
+
+doc = nlp(text[1])
+
+# examine the top-ranked phrases in the document
+for phrase in doc._.phrases:
+    print(phrase.text,'...',phrase.rank, phrase.count,'...',phrase.chunks)
+print(doc)
+for np in doc.noun_chunks:
+    print(np)
+
+
+# 2021.12.22
+import spacy
+#$ spacy download en_core_web_lg
+nlp = spacy.load("en_core_web_lg") #full vector package
+print("{name}: {description}".format(**nlp.meta))
+# en_core_web_trf
+# python -m spacy download en_core_web_trf
+# English transformer pipeline (roberta-base)
+nlp.add_pipe('merge_noun_chunks')
+
+for np in nlp('the sales of healthcare products in the USA and EU decreased primiarily due to weak market demand and regulation changes').noun_chunks:
+    print(np,'...',np.root.head,'>>>',np.similarity(nlp('healthcare')))
+
+
+for token in nlp(s):
+    print(token, token.pos_, token.dep_,len(token.vector), token.vector_norm)
+
+# clustering algorithm
+# seed clusters (economy, pandamic, company specific...), online-clustering
+
+# https://ai.intelligentonlinetools.com/ml/k-means-clustering-example-word2vec/
+
+from sklearn import cluster
+from sklearn import metrics
+
+NUM_CLUSTERS = 3
+X = []
+kmeans = cluster.KMeans(n_clusters=NUM_CLUSTERS)
+kmeans.fit(X)
+
+labels = kmeans.labels_
+centroids = kmeans.cluster_centers_
+
+print("Cluster id labels for inputted data")
+print(labels)
+print("Centroids data")
+print(centroids)
+
+print("Score (Opposite of the value of X on the K-means objective which is Sum of distances of samples to their closest cluster center):")
+print(kmeans.score(X))
+
+silhouette_score = metrics.silhouette_score(X, labels, metric='euclidean')
+print("Silhouette_score: ")
+print(silhouette_score)
+
+
+### https://www.kaggle.com/joehalliwell/document-clustering
+
+# Document vectors capture an intuitive notion of similarity
+# Words that appear similar contexts are considered similar
+import numpy as np
+
+def print_comparison(a, b):
+    # Create the doc objects
+    a = nlp(a)
+    b = nlp(b)
+    # Euclidean "L2" distance
+    distance = np.linalg.norm(a.vector - b.vector)
+    # Cosine similarity
+    similarity = a.similarity(b)
+    print("-" * 80)
+    print("A: {}\nB: {}\nDistance: {}\nSimilarity: {}".format(a, b, distance, similarity))
+
+text = "The cat sat on the mat"
+print_comparison(text, "The feline lay on the carpet")
+print_comparison(text, "Three hundred Theban warriors died that day")
+print_comparison(text, "Ceci n'est pas une pipe")
+
+
+# Document vectors often also have a very interesting property sometimes called "linear substructure"
+# Basically you can do arithmetic with words/concepts!
+
+def vectorize(text):
+    """Get the SpaCy vector corresponding to a text"""
+    return nlp(text, disable=['parser', 'tagger', 'ner']).vector
+
+from heapq import heappush, nsmallest, nlargest
+
+def get_top_n(target_v, n=5):
+    """Figure out the top-N words most similar to the target vector"""
+    heap = []
+    # SpaCy has a long list of words in `vocab` which we can pick from!
+    for word in nlp.vocab:
+        # Filter out mixed case and uncommon terms
+        if not word.is_lower or word.prob < -15:
+            continue
+        distance = np.linalg.norm(target_v - word.vector)
+        heappush(heap, (distance, word.text))
+    return nsmallest(n, heap)
+
+
+PUPPY, DOG, KITTEN = [vectorize(w) for w in ("puppy", "dog", "kitten")]
+get_top_n(DOG - PUPPY + KITTEN)
+
+from sklearn.datasets import fetch_20newsgroups
+raw_posts = fetch_20newsgroups()
+
+print("Number of posts: {}".format(len(raw_posts.data)))
+ # Source groups are listed in `target_names`
+print("Newsgroups: {}".format(raw_posts.target_names))
+ # Post text is in `data`
+print("Sample post text:\n{0}\n{1}\n{0}".format('-' * 80, raw_posts.data[19]))
+ # Post group is encoded in `target` as an index into `target_names`
+print("Sample post group: {}".format(raw_posts.target_names[raw_posts.target[19]]))
+
+raw_posts = fetch_20newsgroups(remove=('headers', 'footers', 'quotes'))
+print("Sample post text:\n{0}\n{1}\n{0}".format('-' * 80, raw_posts.data[19]))
+
+posts = pd.DataFrame({'text': raw_posts.data, 'group': [raw_posts.target_names[t] for t in raw_posts.target]})
+
+# Many tools in the Python ecosystem are quite tightly integrated, so once we have DataFrame we can
+# do things like plot it via the standard charting tool `matplotlib` which we importes as `plt` earlier
+posts['group'].value_counts().plot(kind='bar', title="Per group document counts")
+plt.show()
+
+wc = WordCloud(background_color='white', width=1000, height=400, stopwords=[])
+wc.generate(" ".join(t for t in posts[posts.group == 'rec.autos'].text)).to_image()
+
+from wordcloud import STOPWORDS
+better_stopwords = STOPWORDS.union({'may', 'one', 'will', 'also'})
+wc = WordCloud(background_color='white', width=1000, height=400, stopwords=better_stopwords)
+wc.generate(" ".join(t for t in posts[posts.group == 'rec.autos'].text)).to_image()
+
+
+# First let's get the documents into a suitable form
+# Build a matrix by "stacking" the row vectors from SpaCy
+# Takes about 20 seconds...
+
+from sklearn.preprocessing import normalize
+
+def vectorize(text):
+    # Get the SpaCy vector -- turning off other processing to speed things up
+    return nlp(text, disable=['parser', 'tagger', 'ner']).vector
+
+# Now we stack the vectors and normalize them
+# Inputs are typically called "X"
+X = normalize(np.stack(vectorize(t) for t in posts.text))
+print("X (the document matrix) has shape: {}".format(X.shape))
+print("That means it has {} rows and {} columns".format(X.shape[0], X.shape[1]))
+
+
+CLUSTERS = 20
+
+# First we fit the model...
+from sklearn.cluster import KMeans
+k_means = KMeans(n_clusters=CLUSTERS, random_state=1)
+k_means.fit(X)
+
+# Then we use it to predict clusters for each document...
+# Again it's common to use yhat for a predicted value -- although we wouldn't expect these to
+# correspond directly to the original groups
+yhat = k_means.predict(X)
+
+# Let's take a look at the distribution across classes
+plt.hist(yhat, bins=range(CLUSTERS))
+plt.show()
+
+# To be honest that's not looking very healthy -- ideally we'd see a more even distribution
+# Let's take a look at a couple of the big ones
+
+plot_groups(X2, yhat, (1,14))
+
+
+
+
+
+
+# data
+text = ["The decline was primarily driven by lower sales of Ezetrol in Japan and Ezetrol and Inegy in the EU.",
+        "The sales decline was driven primarily by lower demand impacted by the COVID-19 pandemic across several markets including Europe, Canada, Russia and Latin America.",
+        "The sales decline was driven largely by the COVID-19 pandemic coupled with unfavorable discount rates in the United States in the first quarter of 2021.",
+
+        "The increase in cost of sales primarily reflects costs absorbed by the Organon entities for related party tolling arrangements with Merck which were not in place during the first quarter of 2020.",
+        "Additionally, the increase in cost of sales reflects increases in direct corporate Organon costs partially offset by decreases in divisional costs across markets driven by lower sales and lower allocated costs.",
+        "The sales decline largely reflects impact of VBP in China and lower demand in Europe, Japan and Canada attributable in part to the COVID-19 pandemic.",
+
+        "Operating expenses in the first quarter of 2021 were lower due to the COVID-19 pandemic, primarily driven by lower promotional and selling costs as discussed below.",
+        "Health Contraception Worldwide sales of Nexplanon/Implanon NXT, a single-rod subdermal contraceptive implant, declined 6% in the first quarter of 2021, primarily driven by lower demand in the United States and the U.K. attributable to the COVID-19 pandemic and Latin America attributable to tender delays that is expected to recover in the second half of 2021.",
+
+        "The decline is primarily due to ongoing generic competition for products within the established brands business, particularly for respiratory products Singulair, Dulera and Nasonex, and cardiovascular products Zetia and Vytorin, as well as generic competition for women’s health product NuvaRing.",
+
+        "Worldwide sales of NuvaRing, a vaginal contraceptive product, declined 28% in the first quarter of 2021 due to generic competition in most markets, particularly in the EU and the United States.",
+        "Worldwide sales of Orgalutran, a fertility treatment, increased 85% in the first quarter of 2021 compared to the first quarter of 2020 primarily due to increased demand and favorable discount rates in the United States.",
+        "Sales in the first quarter of 2021 decreased 42% compared to the first quarter of 2020 primarily due to shipments in Brazil in 2020 related to government orders.",
+
+        'Sales increased 20% because the average selling price increased.'
+        ]
+
+import spacy
+nlp = spacy.load("en_core_web_lg") #full vector package
+nlp.add_pipe('merge_noun_chunks')
+import pandas as pd
+import numpy as np
+
+
+df=pd.DataFrame({'sentence':text})
+df['noun_phrases'] = df['sentence'].apply(lambda x: noun_chunks_and_more(nlp(x))[0]) # list of np spans
+df['np'] = df['sentence'].apply(lambda x: [y for y in nlp(x).noun_chunks]) # list of np spans
+
+df.head(2)
+df['np'][1][-1].vector.shape #(300,) vector
+
+df['np'].apply(lambda x: len(x)).sum() #99 data points
+data = []
+df['np'].apply(lambda x: data.extend(x))
+X = [x.vector for x in data]
+
+# K-means clustering
+from sklearn.cluster import KMeans
+model = KMeans(n_clusters=5)
+model.fit(X)
+yhat = model.predict(X)
+clusters = np.unique(yhat)
+print(clusters)
+for cluster in clusters:
+    row_ix = np.where(yhat == cluster)
+    print('Cluster >>>', cluster, '\n', [data[i] for i in row_ix[0]],'\n\n')
+
+
+# mini-batch k-means clustering
+from sklearn.cluster import MiniBatchKMeans
+model = MiniBatchKMeans(n_clusters=5)
+model.fit(X)
+yhat = model.predict(X)
+clusters = np.unique(yhat)
+for cluster in clusters:
+    row_ix = np.where(yhat == cluster)
+    print('Cluster >>>', cluster, '\n', [data[i] for i in row_ix[0]],'\n\n')
+
+
+# visualization using TSNE
+from sklearn.manifold import TSNE
+import matplotlib.pyplot as plt
+
+tsne = TSNE(n_components=2, verbose=1, random_state=123)
+Y = tsne.fit_transform(X)
+
+df = pd.DataFrame({'span':data, 'cluster':yhat, 'y0':Y[:,0],'y1':Y[:,1],})
+df['text'] = df['span'].apply(lambda x: x.text)
+
+colors = ['red', 'black', 'blue', 'brown', 'green']
+
+fig, ax = plt.subplots()
+for cluster in np.unique(yhat):
+    y0 = df['y0'][df['cluster'] == cluster].astype('float')
+    y1 = df['y1'][df['cluster'] == cluster].astype('float')
+    c = colors[cluster]
+    ax.plot(y0,y1, 'o', color=c)
+ax.set_title('Sample phrases by cluster')
+ax.set_yticklabels([]) #Hide ticks
+ax.set_xticklabels([]) #Hide ticks
+
+for i, word in enumerate(data):
+    plt.annotate(word.text, xy=(Y[i, 0], Y[i, 1]), fontsize=6)
+plt.show()
+
+
+
+fig, ax = plt.subplots()
+ax.plot(Y[:, 0], Y[:, 1], 'o')
+ax.set_title('Samples')
+ax.set_yticklabels([]) #Hide ticks
+ax.set_xticklabels([]) #Hide ticks
+
+for i, word in enumerate(data):
+    plt.annotate(word.text, xy=(Y[i, 0], Y[i, 1]), fontsize=7)
+plt.show()
+
+
+### 2021.12.27
+
+# SOM implementation in minisom: https://www.analyticsvidhya.com/blog/2021/09/beginners-guide-to-anomaly-detection-using-self-organizing-maps/
+
+#$pip install minisom
+from minisom import MiniSom
+# Defining X variables for the input of SOM
+X[0].min(),X[0].max(), X[0].shape
+
+# Set the hyper parameters
+som_grid_rows = 2
+som_grid_columns = 2
+iterations = 1000
+sigma = 1
+learning_rate = 0.5
+
+# define SOM:
+som = MiniSom(x = som_grid_rows, y = som_grid_columns, input_len=len(X[0]), sigma=sigma, learning_rate=learning_rate)
+
+# Initializing the weights
+som.random_weights_init(X)
+
+# Training
+som.train_random(X, iterations)
+
+# Returns the distance map from the weights:
+som.distance_map()
+
+from pylab import plot, axis, show, pcolor, colorbar, bone
+bone()
+pcolor(som.distance_map().T)       # Distance map as background
+colorbar()
+show()
+
+yhat = []
+for i, x in enumerate(X):
+    w = som.winner(x)
+    idx = w[0]*m + w[1]
+    yhat.append(idx)
+np.unique(yhat)
+
+# print by cluster
+for k in range(3):
+    for j in range(3):
+        counter = 0
+        for i, x in enumerate(X):
+            w = som.winner(x)
+            if w == (k,j):
+                print(w,data[i])
+                counter +=1
+        print(counter,'\n\n')
+
+
+# implementation in SimpSOM: https://dalicodes.medium.com/overview-of-self-organizing-maps-som-with-its-python-implementation-in-determining-safe-airlines-db8f6018a2b
+#$ pip install SimpSOM
+import SimpSOM # does not work...
+
+# SOM implementation in numpy: https://stackabuse.com/self-organizing-maps-theory-and-implementation-in-python-with-numpy/
+
+epochs = np.arange(0, 50)
+lr_decay = [0.001, 0.1, 0.5, 0.99]
+fig,ax = plt.subplots(nrows=1, ncols=4, figsize=(15,4))
+plt_ind = np.arange(4) + 141
+for decay, ind in zip(lr_decay, plt_ind):
+    plt.subplot(ind)
+    learn_rate = np.exp(-epochs * decay)
+    plt.plot(epochs, learn_rate, c='cyan')
+    plt.title('decay rate: ' + str(decay))
+    plt.xlabel('epochs $t$')
+    plt.ylabel('$\eta^(t)$')
+fig.subplots_adjust(hspace=0.5, wspace=0.3)
+plt.show()
+
+distance = np.arange(0, 30)
+sigma_sq = [0.1, 1, 10, 100]
+fig,ax = plt.subplots(nrows=1, ncols=4, figsize=(15,4))
+plt_ind = np.arange(4) + 141
+for s, ind in zip(sigma_sq, plt_ind):
+    plt.subplot(ind)
+    f = np.exp(-distance ** 2 / 2 / s)
+    plt.plot(distance, f, c='cyan')
+    plt.title('$\sigma^2$ = ' + str(s))
+    plt.xlabel('Distance')
+    plt.ylabel('Neighborhood function $f$')
+fig.subplots_adjust(hspace=0.5, wspace=0.3)
+plt.show()
+
+# We'll implement the SOM as a 2D mxn grid, hence requiring a 3D NumPy array. The third dimension is required for storing the weights in each cell:
+
+# Return the (g,h) index of the BMU in the grid
+def find_BMU(SOM, x):
+    distSq = (np.square(SOM - x)).sum(axis=2)
+    return np.unravel_index(np.argmin(distSq, axis=None), distSq.shape)
+
+# Update the weights of the SOM cells when given a single training example and the model parameters along with BMU coordinates as a tuple
+def update_weights(SOM, train_ex, learn_rate, radius_sq, BMU_coord, step=3):
+    g, h = BMU_coord
+    # if radius is close to zero then only BMU is changed
+    if radius_sq < 1e-3:
+        SOM[g, h, :] += learn_rate * (train_ex - SOM[g, h, :])
+        return SOM
+    # Change all cells in a small neighborhood of BMU
+    for i in range(max(0, g - step), min(SOM.shape[0], g + step)):
+        for j in range(max(0, h - step), min(SOM.shape[1], h + step)):
+            dist_sq = np.square(i - g) + np.square(j - h)
+            dist_func = np.exp(-dist_sq / 2 / radius_sq)
+            SOM[i, j, :] += learn_rate * dist_func * (train_ex - SOM[i, j, :])
+    return SOM
+
+# Main routine for training an SOM. It requires an initialized SOM grid or a partially trained grid as parameter
+def train_SOM(SOM, train_data, learn_rate=.1, radius_sq=1, lr_decay=.1, radius_decay=.1, epochs=10):
+    learn_rate_0 = learn_rate
+    radius_0 = radius_sq
+    for epoch in np.arange(0, epochs):
+        rand.shuffle(train_data)
+        for train_ex in train_data:
+            g, h = find_BMU(SOM, train_ex)
+            SOM = update_weights(SOM, train_ex,
+                                 learn_rate, radius_sq, (g, h))
+        # Update learning rate and radius
+        learn_rate = learn_rate_0 * np.exp(-epoch * lr_decay)
+        radius_sq = radius_0 * np.exp(-epoch * radius_decay)
+    return SOM
+
+
+# Dimensions of the SOM grid
+m = 10
+n = 10
+# Number of training examples
+n_x = 3000
+rand = np.random.RandomState(0)
+# Initialize the training data
+train_data = rand.randint(0, 255, (n_x, 3))
+# Initialize the SOM randomly
+SOM = rand.randint(0, 255, (m, n, 3)).astype(float)
+# Display both the training matrix and the SOM grid
+fig, ax = plt.subplots(
+    nrows=1, ncols=2, figsize=(12, 3.5),
+    subplot_kw=dict(xticks=[], yticks=[]))
+ax[0].imshow(train_data.reshape(50, 60, 3))
+ax[0].title.set_text('Training Data')
+ax[1].imshow(SOM.astype(int))
+ax[1].title.set_text('Randomly Initialized SOM Grid')
+plt.show()
+
+fig, ax = plt.subplots(
+    nrows=1, ncols=4, figsize=(15, 3.5),
+    subplot_kw=dict(xticks=[], yticks=[]))
+total_epochs = 0
+for epochs, i in zip([1, 4, 5, 10], range(0,4)):
+    total_epochs += epochs
+    SOM = train_SOM(SOM, train_data, epochs=epochs)
+    ax[i].imshow(SOM.astype(int))
+    ax[i].title.set_text('Epochs = ' + str(total_epochs))
+plt.show()
+
+
+# my example data
+m = 2
+n = 2
+# Number of training examples
+n_x = 99
+rand = np.random.RandomState(0)
+# Initialize the training data
+train_data = np.array(X)
+# Initialize the SOM randomly
+SOM = rand.randint(0, 255, (m, n, 300)).astype(float)
+SOM = train_SOM(SOM, train_data, epochs=1)
+
+
+# print by cluster
+for k in range(m):
+    for j in range(n):
+        counter = 0
+        for i in range(len(train_data)):
+            train_ex = train_data[i]
+            g, h = find_BMU(SOM, train_ex)
+            if (g,h) == (k,j):
+                print((g, h), data[i])
+                counter +=1
+        print(counter,'\n\n')
+
+# this does not seem to work...
+
+# clustering algorithm basics: https://machinelearningmastery.com/clustering-algorithms-with-python/
+import sklearn
+# print(sklearn.__version__)
+# synthetic classification dataset
+import numpy as np
+from sklearn.datasets import make_classification
+from matplotlib import pyplot as plt
+# define dataset
+X, y = make_classification(n_samples=1000, n_features=2, n_informative=2, n_redundant=0, n_clusters_per_class=1, random_state=4)
+# create scatter plot for samples from each class
+for class_value in range(2):
+	# get row indexes for samples with this class
+	row_ix = np.where(y == class_value)
+	# create scatter of these samples
+	plt.scatter(X[row_ix, 0], X[row_ix, 1])
+# show the plot
+plt.show()
+
+X.shape #(1000,2)
+
+from sklearn.cluster import AffinityPropagation
+# define the model
+model = AffinityPropagation(damping=0.9)
+# fit the model
+model.fit(X)
+# assign a cluster to each example
+yhat = model.predict(X)
+# retrieve unique clusters
+clusters = np.unique(yhat)
+# create scatter plot for samples from each cluster
+for cluster in clusters:
+    # get row indexes for samples with this cluster
+    row_ix = np.where(yhat == cluster)
+    # create scatter of these samples
+    plt.scatter(X[row_ix, 0], X[row_ix, 1])
+
+# show the plot
+plt.show()
+
+
+# BIRCH Clustering (BIRCH is short for Balanced Iterative Reducing and Clustering using Hierarchies)
+# involves constructing a tree structure from which cluster centroids are extracted.
+# BIRCH incrementally and dynamically clusters incoming multi-dimensional metric data points to try to
+# produce the best quality clustering with the available resources (ie available memory and time constraints).
+
+
+# birch clustering
+from sklearn.cluster import Birch
+# define dataset
+X, _ = make_classification(n_samples=1000, n_features=2, n_informative=2, n_redundant=0, n_clusters_per_class=1, random_state=4)
+# define the model
+model = Birch(threshold=0.01, n_clusters=2)
+# fit the model
+model.fit(X)
+# assign a cluster to each example
+yhat = model.predict(X)
+# retrieve unique clusters
+clusters = np.unique(yhat)
+# create scatter plot for samples from each cluster
+for cluster in clusters:
+	# get row indexes for samples with this cluster
+	row_ix = np.where(yhat == cluster)
+	# create scatter of these samples
+	plt.scatter(X[row_ix, 0], X[row_ix, 1])
+# show the plot
+plt.show()
+
+
+# visualization in TSNE
+def TSNE_vis(data, X, yhat, colors=['red', 'black', 'blue', 'green', 'yellow','orange','purple','pink']):
+    # from sklearn.manifold import TSNE
+    # import matplotlib.pyplot as plt
+
+    tsne = TSNE(n_components=2, verbose=1, random_state=0)
+    Y = tsne.fit_transform(X)
+
+    df = pd.DataFrame({'span': data, 'cluster': yhat, 'y0': Y[:, 0], 'y1': Y[:, 1], })
+    df['text'] = df['span'].apply(lambda x: x.text)
+
+    fig, ax = plt.subplots()
+    for cluster in np.unique(yhat):
+        y0 = df['y0'][df['cluster'] == cluster].astype('float')
+        y1 = df['y1'][df['cluster'] == cluster].astype('float')
+        c = colors[cluster]
+        ax.plot(y0, y1, 'o', color=c)
+    ax.set_title('Sample phrases by cluster')
+    ax.set_yticklabels([])  # Hide ticks
+    ax.set_xticklabels([])  # Hide ticks
+
+    for i, word in enumerate(data):
+        plt.annotate(word.text, xy=(Y[i, 0], Y[i, 1]), fontsize=6)
+    plt.show()
+
+
+
+# my daa
+X, data
+
+model = Birch(threshold=0.01, n_clusters=5)
+model.fit(X)
+yhat = model.predict(X)
+clusters = np.unique(yhat)
+for cluster in clusters:
+    row_ix = np.where(yhat == cluster)
+    print('Cluster >>>', cluster, '\n', [data[i] for i in row_ix[0]],'\n\n')
+
+TSNE_vis(data, X, yhat)
+
+# further resources
+# https://github.com/JustGlowing/minisom
+# https://stats.stackexchange.com/questions/238538/are-there-cases-where-pca-is-more-suitable-than-t-sne
+
+#https://pypi.org/project/sklearn-som/
+#https://github.com/bougui505/quicksom
+
+
+
+### 2022.01.05
+# Process the existing samples to form a map
+# Assemble the pipeline together
+# Further investigate the map for temporal visualization
+
+# stage 1 - download all the financial reports [done]
+# stage 2 - identify MDA section and save raw text
+
+
+rawTexts = ["The decline was primarily driven by lower sales of Ezetrol in Japan and Ezetrol and Inegy in the EU.",
+        "The sales decline was driven primarily by lower demand impacted by the COVID-19 pandemic across several markets including Europe, Canada, Russia and Latin America.",
+        "The sales decline was driven largely by the COVID-19 pandemic coupled with unfavorable discount rates in the United States in the first quarter of 2021.",
+
+        "The increase in cost of sales primarily reflects costs absorbed by the Organon entities for related party tolling arrangements with Merck which were not in place during the first quarter of 2020.",
+        "Additionally, the increase in cost of sales reflects increases in direct corporate Organon costs partially offset by decreases in divisional costs across markets driven by lower sales and lower allocated costs.",
+        "The sales decline largely reflects impact of VBP in China and lower demand in Europe, Japan and Canada attributable in part to the COVID-19 pandemic.",
+
+        "Operating expenses in the first quarter of 2021 were lower due to the COVID-19 pandemic, primarily driven by lower promotional and selling costs as discussed below.",
+        "Health Contraception Worldwide sales of Nexplanon/Implanon NXT, a single-rod subdermal contraceptive implant, declined 6% in the first quarter of 2021, primarily driven by lower demand in the United States and the U.K. attributable to the COVID-19 pandemic and Latin America attributable to tender delays that is expected to recover in the second half of 2021.",
+
+        "The decline is primarily due to ongoing generic competition for products within the established brands business, particularly for respiratory products Singulair, Dulera and Nasonex, and cardiovascular products Zetia and Vytorin, as well as generic competition for women’s health product NuvaRing.",
+
+        "Worldwide sales of NuvaRing, a vaginal contraceptive product, declined 28% in the first quarter of 2021 due to generic competition in most markets, particularly in the EU and the United States.",
+        "Worldwide sales of Orgalutran, a fertility treatment, increased 85% in the first quarter of 2021 compared to the first quarter of 2020 primarily due to increased demand and favorable discount rates in the United States.",
+        "Sales in the first quarter of 2021 decreased 42% compared to the first quarter of 2020 primarily due to shipments in Brazil in 2020 related to government orders.",
+
+        'Sales increased 20% because the average selling price increased.'
+        ]
+
+import pickle
+import pandas as pd
+import numpy as np
+from bs4 import BeautifulSoup
+import re
+import time
+import os
+from ast import literal_eval # pandas store list as string; need to convert back
+from collections import Counter
+import spacy
+from spacy.matcher import PhraseMatcher
+from spacy.matcher import Matcher
+
+# !pip install wordcloud
+from wordcloud import WordCloud
+import seaborn as sns
+import matplotlib.pyplot as plt
+
+pd.set_option('max_colwidth',None)
+pd.set_option('display.max_rows', None)
+pd.set_option('display.width', 0)
+
+
+# set parameters
+nlp = spacy.load("en_core_web_lg")
+nlp.select_pipes(disable=["ner"]) # excluding any of the others won't work
+nlp.pipe_names
+
+causal_indicators = {'CvE':['drive', 'affect', 'impact', 'cause', 'result','attribute'],
+                     'EvC':['reflect'],
+                     'nonverbs':['due to', 'because','since','attributable to'],
+                     #'nonpredicate': ['driven by', 'caused by', 'impacted by', 'affected by','resulting from','attributed to']
+                     }
+
+matcher_verbs = Matcher(nlp.vocab)
+for k in ['CvE','EvC']:
+    pattern=[]
+    pattern.append({'LEMMA': {'IN':causal_indicators[k]}, 'POS': 'VERB'})
+    matcher_verbs.add(k, [pattern])
+
+matcher_nonverbs = PhraseMatcher(nlp.vocab, attr="LEMMA") # need token.lemma_ = token.lemma_.lower()
+for k in ['nonverbs']:
+    nonverb_patterns = [nlp(x) for x in causal_indicators[k]]
+    matcher_nonverbs.add(k, nonverb_patterns)
+
+topics = ['revenue','sale','cost','margin','profit','income','business','market demand'] # AS NOUNS
+matcher_topics = PhraseMatcher(nlp.vocab, attr="LEMMA") # need token.lemma_ = token.lemma_.lower()
+topic_patterns = [nlp(topic) for topic in topics]
+matcher_topics.add("topics", topic_patterns)
+
+
+def filter_(text, matcher_topics, matcher_verbs,matcher_nonverbs ):
+    """check if the input fulfills the following criteria:
+        - is a full sentence i.e. filter off headings, page numbers, bullet points, etc.
+        - casual indicator is present - likely to contain a causal relationship
+        - contains words in the topic of interest - narrow down the search space
+    """
+
+    # nlp = spacy.load("en_core_web_sm", exclude=["ner"])
+    if isinstance(text, str):
+        if len(text)<50 or len(text) > 500:
+            return # reject raw text which is too short or too long
+        sent = nlp(text)
+
+    if sent[:].root.pos_ != 'VERB' and sent[:].root.pos_ != 'AUX' :
+        return  # discard if not a full sentence
+
+    causal = []
+    causal.extend(matcher_verbs(sent))
+    causal.extend(matcher_nonverbs(sent))
+
+    if len(causal) == 0:
+        return  # discard if none of the causal indicators are present
+
+    topic = matcher_topics(sent)
+    if len(topic) == 0:
+        return
+
+    d = {'sent': sent, 'topic':[], 'causal': {},'idx':[]}
+    for y in topic:
+        d['topic'].append(sent[y[1]:y[2]].text)
+    for x in causal:
+        if x[2] == len(sent):
+            continue
+        if nlp.vocab.strings[x[0]] not in d['causal'].keys():
+            d['causal'][nlp.vocab.strings[x[0]]] = [(sent[x[1]:x[2]].text,sent[x[1]:x[2]][0].tag_, (sent[x[1]].i, sent[x[2]].i))] #sent[start:end] is a span, to get the token = span[0]
+        else:
+            d['causal'][nlp.vocab.strings[x[0]]].extend([(sent[x[1]:x[2]].text,sent[x[1]:x[2]][0].tag_, (sent[x[1]].i, sent[x[2]].i))]) #sent[start:end] is a span, to get the token = span[0]
+        d['idx'].append((x[1],x[2]))
+
+    d['idx'].sort() #ascending order in place
+
+    return d
+
+
+def locate_boundary(all_idx, current_idx):
+    start = 0
+    end = -1
+    # Case 1: only one
+    if len(all_idx) == 1:
+        return (start,end)
+
+    i = all_idx.index(current_idx)
+    # Case 2: the first one
+    if i == 0:
+        end = all_idx[i+1][0]
+        return (start,end)
+    # Case 3: the last one
+    if i == len(all_idx)-1:
+        start = all_idx[i-1][-1]
+        return (start, end)
+
+    # Case 4: anything in between
+    start = all_idx[i - 1][-1]
+    end = all_idx[i + 1][0]
+    return (start, end)
+
+
+
+def extract_(d):
+    sent = d['sent']
+    EC_pairs = []
+    for k in d['causal'].keys():
+        for v in d['causal'][k]:
+            start, end = locate_boundary(d['idx'], v[2])
+            if (k == 'CvE' and v[1] == 'VBN') or (k == 'EvC' and v[1] != 'VBN') or k == 'nonverbs': # VBN: past participle
+                cause = sent[v[2][-1]:end].text
+                effect = sent[start:v[2][0]].text
+                #print('if... >> causal=',v[0],' >> effect=',effect,' >> cause=',cause)
+            else:
+                cause = sent[start:v[2][0]].text
+                effect = sent[v[2][-1]:end].text
+                #print('else... >> causal=',v[0],' >> effect=',effect,' >> cause=',cause)
+            EC_pairs.append((effect, cause))
+    return EC_pairs
+
+
+# def process_(text):
+#     doc = nlp(text)
+#     noun_chunks = [*doc.noun_chunks]
+#
+#     links = [[0,len(doc)]]
+#     nodes = []
+#
+#     for span in noun_chunks:
+#         links[-1][-1] = span.start
+#         nouns = [token.i for token in span if token.pos_ in ["NOUN","PROPN"]]
+#         nodes.append([min(nouns),max(nouns)+1])
+#         links[-1][-1] = nodes[-1][0]
+#         links.append([span.end,len(doc)])
+#
+#     return nodes, links
+
+def model_(text):
+    """
+        text: raw text string, a sentence or a segment of a sentence
+        return: a model with nodes representing nouns and noun-phrases (noun_chunks stripped of adj det, etc.), links representing everything in between two noun phrases (including adj. verb, etc)
+    """
+    doc = nlp(text)
+
+    if len(doc)==0:
+        return
+
+    x = []
+    if doc[0].pos_ in ["NOUN","PROPN"]:
+        x.append({'noun':''})
+    else:
+        x.append({'link':''})
+    for token in doc:
+        if token.pos_ in ["NOUN","PROPN"]:
+            if 'noun' in x[-1].keys():
+                x[-1]['noun']+=' '+token.lemma_
+            else:
+                x.append({'noun':token.lemma_})
+        else:
+            if 'link' in x[-1].keys():
+                x[-1]['link']+=' '+token.text
+            else:
+                x.append({'link':token.text})
+    return x
+
+
+def get_nouns(model_text):
+    """
+    :param model_text: output from model_(text) as a list of dictionaries e.g., [{'link': ' largely by the'}, {'noun': 'COVID-19'}, {'link': 'pandemic coupled with unfavorable'}, {'noun': 'discount rates'}, {'link': 'in the'}, {'noun': 'United States'}, {'link': 'in the first'}, {'noun': 'quarter'}, {'link': 'of 2021'}]
+    :return: list of nouns, string
+    """
+    nouns = []
+    for d in model_text:
+        if 'noun' in d.keys():
+            nouns.append(d['noun'])
+    return nouns
+
+
+def vectorize_spacy(nouns,nlp):
+    """
+    :param nouns: a list of nouns or noun-phrases, string
+    :param nlp: nlp = spacy.load("en_core_web_lg") #full vector package 300
+    :return: numpy array of vectors nx300
+    """
+    x = []
+    for n in nouns:
+        vec = np.array([t.vector for t in nlp(n)])
+        avg = np.mean(vec,axis=0)
+        x.append(avg)
+    return np.array(x)
+
+
+# test
+rawData = []
+for text in rawTexts:
+    d = filter_(text, matcher_topics, matcher_verbs, matcher_nonverbs)
+    EC_pairs = extract_(d)
+    for ec in EC_pairs:
+        model_text = model_(ec[1])
+        print(model_text)
+        nouns = get_nouns(model_text)
+        print(nouns)
+        rawData.extend(nouns)
+data = list(set(rawData))
+X = vectorize_spacy(data,nlp)
+X.shape #70,300 --> #47, 300
+
+
+
+
+# load data
+data_root = "C:/Users/clair/Desktop/Thesis/masterThesis2022/Data/"
+file_name = "sample2_sentences.pkl" #latest - last modified on 2021-11-29
+df = pd.read_pickle(data_root+file_name)
+df.columns  # only take the ix start and end for MDA raw
+
+
+# copied from 2.Preprocessing_part3.ipynb cell#86
+
+def get_MDA(row):
+    global data_root
+
+    ticker = str(row['ticker'])
+    type_ = str(row['type'])
+    file = str(row['file'])
+
+    folder = data_root + 'Samples/' + ticker + "/" + type_ + "/" + file + "/"
+    file_name = folder + "/raw_mda.txt"
+
+    try:
+        with open(file_name) as f:
+            text = f.read()
+    except OSError:
+        text = ''
+
+    return text
+
+# This is too slow and not necessary!
+# def get_sentences(text):
+#     doc = nlp(text)
+#     sentences = [s for s in doc.sents]
+#     return sentences
+
+def get_sentences(text):
+    sentences = re.split(r'\. ', text)
+    return sentences
+
+
+### Modified!!!
+
+def transfer_sentences(df_sent, df_doc):
+    for index, row in df_doc.iterrows():
+        ticker = str(row['ticker'])
+        type_ = str(row['type'])
+        file = str(row['file'])
+        id_ = (ticker, type_, file)  # unique id for each document
+
+        text = get_MDA(row)  # raw text
+
+        df_ = pd.DataFrame()
+        df_['sentence'] = get_sentences(text)  # SpaCy doc
+        # 156 len(df_['sentence'])
+        df_['d'] = df_['sentence'].apply(lambda sentence: filter_(sentence, matcher_topics, matcher_verbs, matcher_nonverbs))
+        df_['topic'] = df_['d'].apply(lambda d:d['topic'] if d else None)
+        df_['causal'] = df_['d'].apply(lambda d:d['causal'] if d else None)
+
+        df_['EC_pairs'] = df_['d'].apply(lambda d:extract_(d) if isinstance(d,dict) else None)
+        df_['e_raw'] = df_['EC_pairs'].apply(lambda EC_pairs: [ec[0] for ec in EC_pairs] if EC_pairs else None)
+        df_['c_raw'] = df_['EC_pairs'].apply(lambda EC_pairs: [ec[1] for ec in EC_pairs] if EC_pairs else None)
+        df_['c_model'] = df_['c_raw'].apply(lambda c_raw: [model_(c) for c in c_raw] if c_raw else None)
+        df_['c_noun'] = df_['c_model'].apply(lambda c_model: [get_nouns(c) for c in c_model if c] if c_model else None)
+
+        df_.drop(columns=['d','EC_pairs'], inplace=True)
+        df = df_[df_['causal'].notna()]
+        df_sent = df_sent.append(df, ignore_index=True)
+
+        print(id_, 'num of sentences:', len(df_), '->', len(df))
+        # sum([x for x in df_['c_noun'] if x], [])
+    return df_sent
+
+
+df_sent = pd.DataFrame()
+df_doc = df[:1].copy()
+del df
+df_sent = transfer_sentences(df_sent,df_doc)
+
+df_doc.columns
+df_sent.columns
+
+
+# RUN THIS ???
+# df_sent['c_model'] = df_sent['c_raw'].apply(lambda c_raw: [model_(c) for c in c_raw] if c_raw else None)
+# df_sent['c_noun'] = df_sent['c_model'].apply(lambda c_model: [get_nouns(c) for c in c_model if c] if c_model else None)
+df_sent.to_pickle(data_root + 'sample3_filtered.pkl')
+
+len(df_sent) #17,781
+df_sent.head(5)
+df_sent.tail(5)
+c_model = df_sent['c_model'].apply(len).value_counts()
+
+data = sum([x for x in df_sent['c_noun'] if x], [])
+len(data) #21009
+data[:3] #[['effect', 'selling cost', 'quarter', 'month'], ['pandemic', 'cost', 'Organon'], ['sale', 'woman', 'health product', 'Nexplanon', 'Implanon NXT', 'Follistim AQ', 'follitropin', 'injection', 'Ganirelix Acetate Injection', 'sale', 'product']]
+
+data = sum([x for x in data], [])
+len(data) #95848
+data[:3] #['effect', 'selling cost', 'quarter']
+
+data = list(set(data))
+len(data) #6215
+
+import pickle
+print(len(data),data[:3]) # 6215
+
+
+
+X = vectorize_spacy(data,nlp) # this takes a long time
+print(X.shape) # 6215, 300
+
+with open(data_root + 'sample3_X.pkl', 'wb') as fp:
+    pickle.dump(X, fp)
+with open (data_root + 'sample3_X.pkl', 'rb') as fp:
+    X = pickle.load(fp)
+
+
+
+### Clustering ###
+k_means = {}
+# K-means clustering
+from sklearn.cluster import KMeans
+model = KMeans(n_clusters=9)
+model.fit(X)
+yhat = model.predict(X)
+clusters = np.unique(yhat)
+print(clusters)
+for cluster in clusters:
+    row_ix = np.where(yhat == cluster)
+    # print('Cluster >>>', cluster, '\n', [data[i] for i in row_ix[0]],'\n\n')
+    k_means[cluster] = [data[i] for i in row_ix[0]]
+    print('Cluster >>>', cluster, '\n', k_means[cluster],'\n\n')
+
+
+k_mini= {}
+# mini-batch k-means clustering
+from sklearn.cluster import MiniBatchKMeans
+model = MiniBatchKMeans(n_clusters=9)
+model.fit(X)
+yhat = model.predict(X)
+clusters = np.unique(yhat)
+for cluster in clusters:
+    row_ix = np.where(yhat == cluster)
+    k_mini[cluster] = [data[i] for i in row_ix[0]]
+    print('Cluster >>>', cluster, '\n', k_mini[cluster],'\n\n')
+
+
+### Some useful references:
+# https://heartbeat.comet.ml/introduction-to-self-organizing-maps-soms-98e88b568f5d
+# Comparison of existing python libs for SOM: https://homepage.cs.uri.edu/faculty/hamel/pubs/theses/ms-thesis-yuan.pdf
+# Official tutorial: https://github.com/JustGlowing/minisom/blob/master/examples/BasicUsage.ipynb
+
+#$pip install minisom
+from minisom import MiniSom
+
+# Defining X variables for the input of SOM
+# X[0].min(),X[0].max(), X[0].shape
+
+# Set the hyper parameters, 3x3, 10x10, 100x100
+num_row = 30
+num_col = 30
+num_iter = 5000
+sigma = 1
+learning_rate = 0.5
+
+# define SOM:
+som = MiniSom(x = num_row, y = num_col, input_len=len(X[0]),
+              sigma=sigma, learning_rate=learning_rate, neighborhood_function='gaussian', random_seed=0)
+#  input_len = number of features in our dataset
+#  sigma = radius of the different neighbors in the SOM, default = 1
+#  learning_rate = how much weights are adjusted during each iteration
+
+# Initializing the weights
+som.random_weights_init(X)
+#som.pca_weights_init(X)
+
+# Training
+som.train_random(X, num_iter, verbose=True)
+
+
+# Visualization of grid
+
+# 1. Grid distance map - weights on each neuron
+fig, ax = plt.subplots(1,2, figsize=(20,10))
+weights = som.distance_map()
+ax0 = ax[0].pcolor(weights.T, cmap='Blues',alpha=.2)  # plotting the distance map as background #camp='bone_r'
+ax[0].set_title('Weights')
+plt.colorbar(ax0, ax=ax[0])
+
+# 2. Acivation map - distribution density
+frequencies = som.activation_response(X)
+ax1 = ax[1].pcolor(frequencies.T, cmap='Blues')
+ax[1].set_title('Activations')
+plt.colorbar(ax1, ax=ax[1])
+
+fig.suptitle("SOM {}x{} grid with sigma={}, alpha={}, and {} iterations - Random".format(num_row,num_col,sigma, learning_rate, num_iter))
+plt.show()
+
+
+frequencies.shape
+np.unique(frequencies, return_counts=True)
+#array([  0.,   1.,   2.,   3.,   4.,   5.,   6.,   7.,   8., 135.]),
+#array([5315, 3771,  807,  158,   29,   13,    3,    2,    1,    1],
+plt.imshow(frequencies)
+plt.show()
+
+
+
+# 3. Overlay dots on grid if classification is known
+# plt.figure(figsize=(num_row+num_row//10, num_col))
+# plt.pcolor(som.distance_map().T, cmap='bone_r',alpha=.2)  # plotting the distance map as background
+# plt.colorbar()
+#
+# w_x, w_y = zip(*[som.winner(x) for x in X])
+# w_x = np.array(w_x)
+# w_y = np.array(w_y)
+# target = np.ones(len(X))
+# label_names = {1:'w'}
+#
+# for c in np.unique(target):
+#     idx_target = target==c
+#     plt.scatter(w_x[idx_target]+.5+(np.random.rand(np.sum(idx_target))-.5)*.8,
+#                 w_y[idx_target]+.5+(np.random.rand(np.sum(idx_target))-.5)*.8,
+#                 s=50, c='C1', label=label_names[c])
+# plt.legend(loc='upper right')
+# plt.grid()
+# #plt.savefig('resulting_images/som_seed.png')
+# plt.show()
+
+
+
+# # translating (0,1) into yhat label
+# yhat = []
+# labels = np.arange(num_row*num_col).reshape(num_row,num_col)
+#
+# for i, x in enumerate(X):
+#     w = som.winner(x)
+#     idx = labels[w[0], w[1]]
+#     yhat.append(idx)
+#
+# np.unique(yhat)
+# print(len(yhat),labels.shape,)
+#
+# som_mini = {}
+# # print by cluster
+# for k in range(num_row):
+#     for j in range(num_col):
+#         som_mini[(k,j)] = []
+#
+# for i, x in enumerate(X):
+#     w = som.winner(x)
+#     som_mini[w].append(data[i])
+#
+# for w in som_mini.keys():
+#     print('Cluster >>>', w, '\n', som_mini[w], '\n\n')
+
+
+
+# each neuron represents a cluster
+winner_coordinates = np.array([som.winner(x) for x in X]).T #(2, 6215)
+# with np.ravel_multi_index we convert the bidimensional coordinates to a monodimensional index
+yhat = np.ravel_multi_index(winner_coordinates, (num_row,num_col)) #6215
+
+clusters, counts = np.unique(yhat, return_counts=True)
+counts.max(),counts.min(),counts.sum()
+
+som_mini = {}
+for cluster in clusters:
+    row_ix = np.where(yhat == cluster)
+    som_mini[cluster] = [data[i] for i in row_ix[0]]
+    print('Cluster >>>', cluster, '\n', som_mini[cluster],'\n\n')
+
+
+
+
+
+
+
+
+# visualization using TSNE
+def TSNE_vis(data, X, yhat):
+    # from sklearn.manifold import TSNE
+    # import matplotlib.pyplot as plt
+
+    tsne = TSNE(n_components=2, verbose=1, random_state=0)
+    Y = tsne.fit_transform(X)
+
+    df = pd.DataFrame({'text': data, 'cluster': yhat, 'y0': Y[:, 0], 'y1': Y[:, 1], })
+    # df['text'] = df['span'].apply(lambda x: x.text)
+
+    fig, ax = plt.subplots()
+    for i, cluster in enumerate(np.unique(yhat)):
+        y0 = df['y0'][df['cluster'] == cluster].astype('float')
+        y1 = df['y1'][df['cluster'] == cluster].astype('float')
+        # c = colors[cluster]
+        ax.plot(y0, y1, 'o', color='C'+str(i))
+    ax.set_title('Sample phrases by cluster')
+    ax.set_yticklabels([])  # Hide ticks
+    ax.set_xticklabels([])  # Hide ticks
+
+    for i, word in enumerate(data):
+        plt.annotate(word, xy=(Y[i, 0], Y[i, 1]), fontsize=8)
+    plt.show()
+
+
+
+# my daa
+X, data
+TSNE_vis(data, X, yhat)
+
+
+# https://stackoverflow.com/questions/54717449/mapping-word-vector-to-the-most-similar-closest-word-using-spacy
+from scipy.spatial import distance
+import spaCy
+
+# Load the spacy vocabulary
+nlp = spacy.load("en_core_web_lg")
+
+# Format the input vector for use in the distance function
+# In this case we will artificially create a word vector from a real word ("frog")
+# but any derived word vector could be used
+input_word = "frog"
+p = np.array([nlp.vocab[input_word].vector])
+
+# Format the vocabulary for use in the distance function
+ids = [x for x in nlp.vocab.vectors.keys()]
+vectors = [nlp.vocab.vectors[x] for x in ids]
+vectors = np.array(vectors)
+
+# *** Find the closest word below ***
+closest_index = distance.cdist(p, vectors).argmin()
+word_id = ids[closest_index]
+output_word = nlp.vocab[word_id].text
+# output_word is identical, or very close, to the input word
+
+
+### 2022.01.10
+# https://medium.com/neo4j/nxneo4j-networkx-api-for-neo4j-a-new-chapter-9fc65ddab222
+# pip install neo4j
+# follow instructions in Trello to start neo4j
+# **cmd as admin** C:\WINDOWS\system32>
+# cd C:\Program Files\neo4j\neo4j-community-4.0.4
+# >> bin\neo4j console
+#
+# Starting a server at Commend$
+# >> cd C:\Users\Claire\neo4j\neo4j-community-4.0.0-windows\neo4j-community-4.0.0
+# >>bin\neo4j console
+# >>Stop the server by typing Ctrl-C in the console.
+#
+# Remote interface available at http://localhost:7474/
+# >> bolt://localhost:7687
+# >> log-in using default user = neo4j
+# >> new password = password_neo4j
+
+
+from neo4j import GraphDatabase
+uri = "bolt://localhost" # don't use this --> "neo4j://localhost:7687"
+driver = GraphDatabase.driver(uri=uri, auth=("neo4j", "password_neo4j"),encrypted = False)
+
+# pip install git+https://github.com/ybaktir/networkx-neo4j
+import nxneo4j as nx4j
+G = nx4j.Graph(driver)   # undirected graph
+G = nx4j.DiGraph(driver) # directed graph
+G.add_node(1)                   #single node
+G.add_nodes_from([2,3,4])       #multiple nodes
+G.add_edge(1,2)                 #single edge
+G.add_edges_from([(2,3),(1,4)]) #multiple edges
+
+list(G.nodes())
+list(G.edges())
+
+# nx4j.draw(G) # does not display in pycharm  <IPython.lib.display.IFrame at 0x2858eae2d30>
+
+# Default
+{
+'node_label': 'Node',
+'relationship_type': 'CONNECTED',
+'identifier_property': 'id'
+}
+
+config = {
+'node_label': 'ABCDEF',
+'relationship_type': None,
+'identifier_property': 'name'
+}
+
+G = nx4j.Graph(driver, config=config)
+
+G.base_params()
+
+G.direction = 'NATURAL'    #for Directed Graph
+G.identifier_property = 'name'
+G.relationship_type = '*'
+G.node_label = 'Character'
+
+
+G.delete_all()
+G.load_got()
+len(G)
+G.base_params()
+nx4j.draw(G)
+
+# the most influential characters
+response = nx4j.pagerank(G)
+sorted_pagerank = sorted(response.items(), key=lambda x: x[1], reverse=True)
+for character, score in sorted_pagerank[:10]:
+    print(character, score)
+
+# networkxneo4j running neo4j algorithms in python
+# use neo4j for data storage and networkx for algorithm
+# Ref: https://towardsdatascience.com/create-a-graph-database-in-neo4j-using-python-4172d40f89c4
+
+
+#https://networkx.org/documentation/stable/tutorial.html#multigraphs
+import networkx as nx
+G = nx.Graph()
+MG = nx.MultiGraph()
+
+import matplotlib.pyplot as plt
+G = nx.petersen_graph()
+subax1 = plt.subplot(121)
+nx.draw(G, with_labels=True, font_weight='bold')
+subax2 = plt.subplot(122)
+nx.draw_shell(G, nlist=[range(5, 10), range(5)], with_labels=True, font_weight='bold')
+plt.show()
+
+node_doc = {'ticker':'XXX','period':'2020-09-30',
+            'causal_sents':[{'text':'Sales growth is driven by strong market demand in Europe.',
+                             'topic':'sales','causes':['market demand','Europe']},
+                             {'text':'Gross margin increased by 10%, primarily due to cost savings.',
+                              'topic':'gross margin','causes':['cost savings']}]}
+
+G = nx.Graph()
+# create a node for each doc:
+G.add_node(node_doc)
+
+for sent in node_doc['causal_sents']:
+    # create a node for each sentence
+
+    for i, c in enumerate(sent['causes']):
+        print(i,c)
+
+
+import pandas as pd
+import json
+import pickle
+
+data_root = "C:/Users/clair/Desktop/Thesis/masterThesis2022/Data/"
+file_name = "sample2_sentences.pkl" #latest - last modified on 2021-11-29
+df = pd.read_pickle(data_root+file_name)
+df_doc = df[:2].copy()
+del df
+df_sent = pd.DataFrame()
+df_sent = transfer_sentences(df_sent,df_doc)
+
+df_doc.columns #Index(['ticker', 'type', 'file', 'ix', 'start', 'end', ...]
+df_sent.columns #Index(['sentence', 'topic', 'causal', 'e_raw', 'c_raw', 'c_model', 'c_noun'], dtype='object')
+
+df_doc.set_index('ticker',inplace=True)
+
+import json
+# Creat a json object
+result = df_doc[['type','file','ix','start','end']].to_json(orient="index")
+parsed = json.loads(result)
+json.dumps(parsed, indent=4)
+
+parsed[ticker]
+
+for ticker in parsed.keys(): #dict_keys(['OGN'])
+    # print(parsed[ticker].keys()) #dict_keys(['type', 'file', 'ix', 'start', 'end'])
+    parsed[ticker]['period']
+
