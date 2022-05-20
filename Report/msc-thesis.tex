@@ -1,0 +1,170 @@
+% This template was initially provided by Dulip Withanage.
+% Modifications for the database systems research group
+% were made by Conny Junghans,  Jannik Strötgen and Michael Gertz
+
+% Further modification based on Scientific Computing Master Thesis Template
+
+\documentclass [
+     12pt,         % font size
+     a4paper,      % paper format
+     BCOR10mm,     % binding correction
+     DIV14,        % stripe size for margin calculation
+     liststotoc,   % table listing in toc
+     bibtotoc,     % bibliography in toc
+     idxtotoc,     % index in toc
+     parskip       % paragraph skip instad of paragraph indent
+     ]{scrreprt}
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+% PACKAGES:
+
+% Use German/English :
+%\usepackage[ngerman]{babel}
+\usepackage[english]{babel}
+
+% Input and font encoding
+\usepackage[latin1]{inputenc}
+\usepackage[T1]{fontenc}
+
+% Index-generation
+\usepackage{makeidx}
+% Einbinden von URLs:
+\usepackage{url}
+% Special \LaTex symbols (e.g. \BibTeX):
+\usepackage{doc}
+% Include Graphic-files:
+\usepackage{graphicx}
+\usepackage{caption}
+\usepackage{subcaption}
+\usepackage{array}
+
+
+
+% Include doc++ generated tex-files:
+%\usepackage{docxx}
+% Include PDF links
+%\usepackage[pdftex, bookmarks=true]{hyperref}
+
+% Fuer anderthalbzeiligen Textsatz
+\usepackage{setspace}
+
+% hyperrefs in the documents
+\usepackage[bookmarks=true,colorlinks,pdfpagelabels,pdfstartview = FitH,bookmarksopen = true,bookmarksnumbered = true,linkcolor = black,plainpages = false,hypertexnames = false,citecolor = black,urlcolor=black]{hyperref} 
+%\usepackage{hyperref}
+
+% maths equations
+\usepackage{amsmath}
+\usepackage{amssymb}
+
+
+\usepackage{listings}% http://ctan.org/pkg/listings
+
+% paragraph indentation and spacing
+\setlength{\parindent}{0em} 
+\setlength{\parskip}{1.5em}
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+% OTHER SETTINGS:
+
+% Pagestyle:
+\pagestyle{headings}
+
+% Choose language
+\newcommand{\setlang}[1]{\selectlanguage{#1}\nonfrenchspacing}
+
+
+\begin{document}
+
+% Title 
+\include{title}
+
+% Declaration
+\include{declaration}
+
+% Add a brief summary of your topic and contributions (Zusammenfassung) in German *and* in English:
+\chapter*{Zusammenfassung}
+\input{zusammenfassung}
+\newpage
+
+\chapter*{Abstract}
+\input{abstract}
+\newpage
+
+
+% MAIN PART:
+% Table of contents (Inhaltsverzeichnis)
+\tableofcontents
+\cleardoublepage
+\pagenumbering{arabic} 
+
+% List of figures (Abbildungsverzeichnis):
+%\listoffigures
+% List of tables (Tabellenverzeichnis):
+%\listoftables
+
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+% Here, the actual content of your thesis begins
+% You can either put all the text here or use individual files to store the chapters of your thesis.
+% Below are templates for both alternatives.
+
+\chapter{Introduction}\label{introduction}
+
+\input{1.Introduction}
+
+\newpage
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+\chapter{Background and Related Work} \label{background}
+
+\input{2.Background}
+
+\newpage
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+\chapter{A Network of Causal Factors} \label{conceptualization}
+
+\input{3.Conceptualization}
+
+\newpage
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+\chapter {Implementation and Experimental Results} \label{implementation}
+
+\input{4.Implementation}
+
+\newpage
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+\chapter {Conclusion} \label{conclusion}
+
+\input{5.Conclusion}
+
+\newpage
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+\appendix 
+
+\chapter{Appendix}
+
+\input{appendix}
+
+\newpage
+
+% References (Literaturverzeichnis):
+% a) Style (with abbreviations: use alpha):
+% see https://de.wikibooks.org/wiki/LaTeX-W%C3%B6rterbuch:_bibliographystyle
+% for the different formats and styles
+\bibliographystyle{ieeetr} %{apalike}
+
+% b) The File:
+\bibliography{references}
+
+\end{document}

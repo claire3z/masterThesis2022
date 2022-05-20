@@ -1,0 +1,63 @@
+%\chapter{Introduction}\label{introduction}
+
+%[What is text mining. Some example applications in finance]
+Text mining, also known as text analytics, is the process of applying Natural Language Processing (NLP) and Machine Learning (ML) techniques to automatically extract structured information from unstructured texts. The extracted information can be analysed to reveal hidden patterns and new insights, thus leading to knowledge discovery. While widely applicable and relevant to practically all business sectors, text mining has attracted, in particular, a lot of attention and excitement from the finance industry \cite{MLinFinance2021, TextMiningFinancialSector2019}. Major financial institutions and service providers are eager to embrace the advent of automatic text mining tools to deal with the huge amount of text-based documents, in anticipation of improved scalability, efficiency and information advantage \cite{MLinUKFin2019, FadorFuture2018}. Indeed, many successful applications, such as text classification, sentiment analysis, fraud detection, machine translation, speech recognition, etc., have been deployed in various subsectors of the finance industry \cite{Tueregun2019, Gupta2020, Ravula2020}.
+
+%[Zoom in on investment research, highlight natural fit with text mining; lack of practical tools]
+One particular subsector in finance that could greatly benefit from text mining is investment research. Underpinning the investment decision-making process, investment research is typically based on a thorough exploration of all information available on a given company or sector, in order to identify the underlying trends that may ultimately lead to profitable investment opportunities. This process closely echoes the two subfields of text mining, i.e., information extraction and knowledge discovery. Despite this, in practice, most investment research is conducted manually by financial analysts, to the best of my knowledge.
+
+%[Limitations of existing methods. Gaps in expectation from industry]
+This is not surprising, given the limitations of what the currently available text mining tools are capable of compared to the research requirements of the investment community. Firstly, the most successful ML models adopted in practice are based on supervised learning \cite{TextMiningFinancialSector2019, FadorFuture2018, Tueregun2019, Gupta2020}. Whether for sentiment analysis, fraud detection or text classification, the underlying models are essentially classifiers trained on large sets of annotated data, where simple ground truth labels are assumed to be available. However, this is generally not the case for investment research, where problems are complex, answers are subjective, and the ground truth is often not readily discernible. Rather than classification, data exploration and pattern recognition are more relevant to investment research.  
+
+Secondly, based on my own experience, in practice, even when tasks can be reduced to classification problems, the amount of data available is often insufficient to properly train deep learning models. Furthermore, due to the sensitivity of proprietary information and the cost of data annotation, it is likely impractical to adopt the supervised machine learning approach used in so many other fields. 
+
+Thirdly, most of the existing text mining tools based on ML usually adopt a black-box approach which often lacks interpretability. From my observations, the prevailing standard practice in investment research is to apply explicit causal inference through logical reasoning based on discrete and limited data points to explain market phenomena. Investment analysts simply cannot rely on ML models she/he does not understand or cannot explain. 
+
+
+\section{Motivation}
+
+% [direction of this thesis – solving a practical problem]
+Recognizing the limited deployment of text mining tools in investment research, this thesis aims to build an automatic and intelligent system that can effectively help investors. Extracting causal factors from financial reports is one area that can be potentially aided by text mining. This particular focus stems from three real-life observations of how human analysts approach investment research. 
+
+% [financial reports a great source of information –> our primary data source]
+1. Financial reports are a primary source of information about publicly listed companies. A crucially important aspect of an analyst's day-to-day job is to gather financial data and business intelligence. These can be collected from a variety of sources, including, but not limited to, news media, industry conferences, company site visits, management interviews, etc. That said, a company's regulatory filings constitute an indispensable primary source of periodic information. These regulatory filings include financial reports such as 10-Q (quarterly reports) and 10-K (annual reports), in which it is required for management to present the companies' financial situation and explain their financial performance. Research analysts and investors alike usually scrutinize these reports in order to more deeply understand companies' business models and performance. Hence, this thesis chooses financial reports as its primary data source.
+
+%[credit attribution, causal mining, common sense reasoning –> infuse heuristics, automated] the underlying causal factors driving their performance. 
+2. Analysts intuitively perform causal inference, leveraging their prior knowledge and experience, when reading financial reports. When analysts try to figure out a company's business model or the sector trends that affect a company's performance, they look for the explicit credit attribution in the section of Management's Discussion and Analysis (MD\&A). They apply common sense reasoning to extract the causal financial performance factors (CFPFs) from this section and build mental models based on logical chains of events. CFPFs enable a better understanding of how the business operates under different scenarios which is useful for forecasting future performance. This process is closely related to causality mining in text analytics \cite{Ali21Survey,Yang21Survey}. Thus, this thesis endeavors to automate the extraction of CFPFs to facilitate this process.
+
+
+%[long term trends, connecting the dots -> comprehensive, exploration at scale, accessible to all][data base at scale with accuracy] 
+3. Experienced financial analysts accumulate sector knowledge through years of following certain companies in one particular sector; they have the ability to 'see' long-term trends and patterns by 'connecting the dots'. They do this through abstraction and recognizing patterns given only sparse data points. This, in turn, enables them to discover and identify unique investment opportunities. 
+
+However, from the perspective of an investor or portfolio manager there are limitations with this approach. Each analyst tends to specialize in only one sector, so many are required to gain a comprehensive understanding of global equity markets. This can quickly become prohibitively expensive for all but the largest financial institutions. Furthermore, this specialization often makes it difficult to discern the larger picture of the economy, so broader market trends, such as inflation, are sometimes missed.  
+Additionally, this knowledge and industry insight is stored in the analysts' minds and only conveyed through written reports or conference calls. Therefore, it is not readily accessible on demand to the investors who rely on it.  It would be useful to have a structured data model to store all of this knowledge at scale for programmatic exploration or integration with investment strategy simulations. 
+
+
+%to infuse this prior expert knowledge in the system. Mimic the human behaviour and leverage expert's heuristics as much as possible while making the process as automated. Abstraction and high-level abstract thinking. Causality inference. Not just data driven. Graphs. We do not teach our children labels and data samples. We teach them rules. Analysts undergoing trainings before job to learn the basic concepts and causality in finance. Association learning. Preprocessing steps to help computer to process in a more structured way. Heuristics rules infused with prior knowledge and expert experience rather than merely labelled training data annotation//and organize them in a structured data model. Rule-based heuristics rather than complete reliance on supervised ML and Data driven models. Expert system with human infused knowledge is a better hybrid approach.
+
+
+%[caveats: financial reports only part of the information; investment is multi-faceted; not to replace human completely; help do the heavy lifting, nowhere close to GAI, human-machine interaction] 
+Investment research is a complex, multi-faceted process which requires a comprehensive skill-set, including financial and accounting literacy, critical thinking, problem solving, data gathering, analytical skills, etc. Human analysts play a vital role in this laborious process. Due to the fact that text mining tools based on ML models available today are nowhere close to achieving general intelligence, it is infeasible to design a system which could replace human analysts. Rather, it would be more effective to compliment human analysts' existing skills by providing partial automation, letting computers do the heavy lifting of data processing, and empowering analysts to focus on data exploration and pattern discovery. 
+The key motivation of this thesis is to inspire the creation of a tool that promotes human-machine interaction to assist investors, portfolio managers, and financial analysts through the provision of efficient information extraction required for the identification of investment opportunities.
+
+
+\section{Objectives}
+
+Recognizing the lack of text mining tools that help tackle practical problems faced daily in investment research, this thesis aims to build an end-to-end pipeline for causality mining from financial reports. The main contributions of this thesis are summarized as follows:
+
+\begin{itemize}
+
+\item We design a heterogeneous graph-based data model to represent companies, financial reports, and the relevant contents therein. This data model facilitates data exploration and knowledge discovery.  
+\item We implement causality extraction based on linguistic patterns and heuristic rules to identify the business drivers and financial performance factors explicitly mentioned in the financial reports. This results in better explanability and interpretability. 
+\item We enrich this data model with an abstraction layer using text clustering to make it easier to establish connections between causal factors and identify patterns in the underlying data model. By applying unsupervised clustering techniques, we effectively avoid issues associated with supervised learning (e.g., cost and data annotation)
+\item [?modify?] We also demonstrate a proof-of-concept visualization for data exploration and discovery of previously unknown patterns. We showcase human-machine interaction and how we can leverage machine learning to complementary human.
+
+\end{itemize}
+
+
+
+\section{Outline}
+
+This thesis is structured as follows. Chapter \ref{introduction} introduces the motivation for this thesis and outlines its main objectives. Chapter \ref{background} provides a comprehensive overview of fundamentals, such as various NLP techniques, causality extraction, clustering algorithms and related works. Chapter \ref{conceptualization} proposes a conceptual heterogeneous graph-based data model with customized node embeddings and similarity measures. Chapter \ref{implementation} introduces the data set and end-to-end pipeline to implement this model. Extensive experiments have also been performed on the model with results compared and discussed. Chapter \ref{conclusion} concludes this thesis with an outlook for future work. 
+
+
